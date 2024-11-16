@@ -1,0 +1,20 @@
+.word-flash {
+  text-align: center;
+  color: white;
+}
+
+.flash-image {
+  border: 5px solid #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.progress-bar-container {
+  margin-top: 20px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  transition: width 0.5s ease-in-out;
+}
