@@ -1,0 +1,60 @@
+.spelling-page {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #f8f9fa;
+  }
+  
+  .content {
+    flex: 1;
+    margin-right: 20px;
+    text-align: center;
+  }
+  
+  .camera-feed {
+    flex: 1;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+  }
+  
+  .flash-image {
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .progress-bar-container {
+    width: 80%;
+    height: 10px;
+    margin: 20px auto;
+    background-color: #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .progress-bar {
+    height: 100%;
+    background-color: #76c7c0;
+  }
+  
+  .check-button {
+    padding: 10px 20px;
+    margin-top: 20px;
+    font-size: 16px;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .correct {
+    color: green;
+  }
+  
+  .incorrect {
+    color: red;
+  }
+  

@@ -1,114 +1,99 @@
-import React, { useEffect, useState } from 'react';
-import './WordFlash.css';
+import React, { useState, useEffect, useRef } from "react";
+import Webcam from "react-webcam";
+import "./WordFlash.css";
 
 const WordFlash = ({ module, onBackToHome }) => {
-  const [mediaList, setMediaList] = useState([]); // State to hold the fetched data
-  const [mediaIndex, setMediaIndex] = useState(0); // State to track the current word index
-  const [progress, setProgress] = useState(0); // State for the progress bar
-  const [error, setError] = useState(null); // State to handle errors
+  const [mediaList, setMediaList] = useState([]);
+  const [mediaIndex, setMediaIndex] = useState(0);
+  const [processedImage, setProcessedImage] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [detectedWord, setDetectedWord] = useState("");
+  const webcamRef = useRef(null);
 
   useEffect(() => {
-    // Fetch words from the backend
     const fetchWords = async () => {
-      try {
-        console.log(`Fetching words for module: ${module}`);
-        const response = await fetch(`http://localhost:5000/api/words/${module}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data: ${response.statusText}`);
-        }
-        const data = await response.json();
-        console.log('Fetched data:', data);
-
-        if (data.length === 0) {
-          setError('No words found for this module.');
-        } else {
-          setMediaList(data);
-        }
-      } catch (error) {
-        console.error('Error fetching words:', error);
-        setError('Failed to load words. Please try again.');
-      }
+      const response = await fetch(`http://localhost:5000/api/words/${module}`);
+      const data = await response.json();
+      setMediaList(data);
     };
 
     fetchWords();
   }, [module]);
 
-  useEffect(() => {
-    // Display the next word every 5 seconds
-    if (mediaList.length > 0 && mediaIndex < mediaList.length) {
-      const currentMedia = mediaList[mediaIndex];
-      const audio = new Audio(currentMedia.audioPath);
-      audio.play();
+  const handleCheckSpelling = async () => {
+    try {
+      const imageSrc = webcamRef.current.getScreenshot();
+      setIsLoading(true);
 
-      const interval = setInterval(() => {
-        setMediaIndex((prevIndex) => prevIndex + 1);
-        setProgress(((mediaIndex + 1) / mediaList.length) * 100);
-      }, 5000);
+      const formData = new FormData();
+      formData.append("image", dataURItoBlob(imageSrc));
 
-      return () => {
-        clearInterval(interval);
-        audio.pause();
-      };
+      const response = await fetch("http://localhost:5001/detect", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to process image");
+      }
+
+      const detectionData = await response.json();
+      setProcessedImage(`data:image/jpeg;base64,${detectionData.processed_image}`);
+      setDetectedWord(detectionData.detected_word || "");
+    } catch (error) {
+      console.error("Error during detection:", error);
+    } finally {
+      setIsLoading(false);
     }
-  }, [mediaIndex, mediaList]);
+  };
+
+  const dataURItoBlob = (dataURI) => {
+    const byteString = atob(dataURI.split(",")[1]);
+    const mimeString = dataURI.split(",")[0].split(":")[1].split(";")[0];
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mimeString });
+  };
 
   return (
-    <div
-      className="word-flash"
-      style={{
-        backgroundImage: `url('/spelling.png')`, // Change this path if needed
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      {error ? (
-        <h2 style={{ color: 'red' }}>{error}</h2> // Display error message
-      ) : mediaList.length > 0 && mediaIndex < mediaList.length ? (
-        <>
-          <img
-            src={mediaList[mediaIndex].imagePath}
-            alt={mediaList[mediaIndex].word}
-            className="flash-image"
-            style={{
-              maxWidth: '60%',
-              maxHeight: '60%',
-              marginBottom: '20px',
-            }}
-          />
-          <div className="progress-bar-container" style={{ width: '80%', height: '10px', backgroundColor: '#ddd' }}>
-            <div
-              className="progress-bar"
-              style={{
-                width: `${progress}%`,
-                height: '100%',
-                backgroundColor: '#76c7c0',
-              }}
-            ></div>
-          </div>
-        </>
-      ) : (
-        <h2>Loading words...</h2> // Loading state
-      )}
-      <button
-        onClick={onBackToHome}
-        style={{
-          marginTop: '20px',
-          padding: '10px 20px',
-          fontSize: '16px',
-          backgroundColor: '#76c7c0',
-          border: 'none',
-          borderRadius: '5px',
-          color: 'white',
-          cursor: 'pointer',
-        }}
-      >
-        Back to Home
-      </button>
+    <div className="word-flash">
+      <div className="layout-container">
+        <div className="camera-section">
+          <h3>Camera Feed</h3>
+          <Webcam ref={webcamRef} screenshotFormat="image/jpeg" />
+          <button onClick={handleCheckSpelling}>Check</button>
+        </div>
+
+        <div className="center-section">
+          {mediaList.length > 0 && mediaIndex < mediaList.length && (
+            <img
+              src={mediaList[mediaIndex].imagePath}
+              alt={mediaList[mediaIndex].word}
+              className="center-image"
+            />
+          )}
+        </div>
+
+        <div className="detection-section">
+          <h3>Detection Results</h3>
+          {isLoading ? (
+            <div className="loading-spinner">Loading...</div>
+          ) : (
+            <>
+              <img
+                src={processedImage}
+                alt="Processed"
+                className="processed-image"
+              />
+              <h4>Detected Word: {detectedWord}</h4>
+            </>
+          )}
+        </div>
+      </div>
+      <button onClick={onBackToHome}>Back to Home</button>
     </div>
   );
 };
