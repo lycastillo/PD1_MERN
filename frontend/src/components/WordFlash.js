@@ -23,6 +23,10 @@ const WordFlash = ({ module, onBackToHome }) => {
   const handleCheckSpelling = async () => {
     try {
       const imageSrc = webcamRef.current.getScreenshot();
+      if (!imageSrc) {
+        alert("Unable to capture an image. Please try again.");
+        return;
+      }
       setIsLoading(true);
 
       const formData = new FormData();
@@ -39,7 +43,7 @@ const WordFlash = ({ module, onBackToHome }) => {
 
       const detectionData = await response.json();
       setProcessedImage(`data:image/jpeg;base64,${detectionData.processed_image}`);
-      setDetectedWord(detectionData.detected_word || "");
+      setDetectedWord(detectionData.detected_word || "No word detected");
     } catch (error) {
       console.error("Error during detection:", error);
     } finally {
@@ -61,36 +65,63 @@ const WordFlash = ({ module, onBackToHome }) => {
   return (
     <div className="word-flash">
       <div className="layout-container">
+        {/* Left: Camera Section */}
         <div className="camera-section">
           <h3>Camera Feed</h3>
-          <Webcam ref={webcamRef} screenshotFormat="image/jpeg" />
+          <div className="camera-wrapper">
+            <Webcam
+              ref={webcamRef}
+              screenshotFormat="image/jpeg"
+              videoConstraints={{
+                width: 300,
+                height: 300,
+              }}
+            />
+          </div>
           <button onClick={handleCheckSpelling}>Check</button>
         </div>
 
+        {/* Center: Word Image and Progress Bar */}
         <div className="center-section">
           {mediaList.length > 0 && mediaIndex < mediaList.length && (
-            <img
-              src={mediaList[mediaIndex].imagePath}
-              alt={mediaList[mediaIndex].word}
-              className="center-image"
-            />
+            <>
+              <img
+                src={mediaList[mediaIndex].imagePath}
+                alt={mediaList[mediaIndex].word}
+                className="flash-image"
+              />
+              <audio src={mediaList[mediaIndex].audioPath} autoPlay />
+              <div className="progress-bar-container">
+                <div
+                  className="progress-bar"
+                  style={{
+                    width: `${((mediaIndex + 1) / mediaList.length) * 100}%`,
+                  }}
+                ></div>
+              </div>
+            </>
           )}
         </div>
 
+        {/* Right: Processed Image and Detected Word */}
         <div className="detection-section">
           <h3>Detection Results</h3>
-          {isLoading ? (
-            <div className="loading-spinner">Loading...</div>
-          ) : (
-            <>
-              <img
-                src={processedImage}
-                alt="Processed"
-                className="processed-image"
-              />
-              <h4>Detected Word: {detectedWord}</h4>
-            </>
-          )}
+          <div className="processed-wrapper">
+            {isLoading ? (
+              <div className="loading-spinner">Loading...</div>
+            ) : (
+              processedImage && (
+                <>
+                  <img
+                    src={processedImage}
+                    alt="Processed"
+                    className="processed-image"
+                  />
+                  <h4 className="detected-word">Detected Word: {detectedWord}</h4>
+                </>
+              )
+            )}
+          </div>
         </div>
       </div>
       <button onClick={onBackToHome}>Back to Home</button>

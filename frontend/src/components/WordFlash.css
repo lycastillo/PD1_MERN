@@ -1,39 +1,77 @@
-.loading-spinner {
-  font-size: 1.5em;
-  font-weight: bold;
-  text-align: center;
-  color: #76c7c0;
-  margin-top: 20px;
+.layout-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
 }
 
-.processed-image-section {
+.camera-section,
+.center-section,
+.detection-section {
   flex: 1;
   text-align: center;
-  margin-left: 10px;
+  margin: 0 10px;
 }
 
-.processed-image {
-  max-width: 100%;
+.camera-wrapper,
+.processed-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: 2px solid #ddd;
   border-radius: 10px;
+  height: 300px;
+  width: 300px;
+  margin: 0 auto;
+}
+
+.camera-section button {
+  margin-top: 10px;
+  padding: 10px 15px;
+  background-color: #76c7c0;
+  border: none;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .flash-image {
-  max-width: 80%;
-  max-height: 80%;
+  max-width: 100%;
+  max-height: 250px;
   border: 2px solid #ddd;
   border-radius: 10px;
+  margin: 0 auto;
 }
 
 .progress-bar-container {
-  margin-top: 10px;
+  width: 80%;
   height: 10px;
+  margin: 10px auto 0;
   background-color: #ddd;
   border-radius: 5px;
+  overflow: hidden;
 }
 
 .progress-bar {
   height: 100%;
   background-color: #76c7c0;
   transition: width 0.3s ease;
+}
+
+.processed-image {
+  max-width: 100%;
+  max-height: 300px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;
+}
+
+.detected-word {
+  margin-top: 15px;
+  text-align: center;
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
 }
