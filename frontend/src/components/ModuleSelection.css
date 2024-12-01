@@ -5,53 +5,40 @@
   justify-content: center;
   text-align: center;
   font-family: Arial, sans-serif;
-  background: url('./modules.jpg') no-repeat center center;
-  background-size: cover;
-  min-height: 100vh; /* Ensures the background covers the full height of the viewport */
-  padding: 20px; /* Adds some padding to prevent content from touching edges */
-}
-
-.module-selection h1 {
-  font-size: 2.5rem;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.module-selection p {
-  font-size: 1.2rem;
-  color: #666;
-  margin-bottom: 30px;
-}
-
-.modules {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.module {
-  background-color: rgba(255, 165, 0, 0.8); /* Slightly transparent orange */
+  background-color: #f9f9f9;
+  min-height: 100vh;
   padding: 20px;
-  border-radius: 8px;
-  width: 200px;
-  text-align: center;
 }
 
-.module h2 {
+h1 {
+  color: #333;
+  margin-bottom: 20px;
   font-size: 2rem;
-  color: #333;
-  margin-bottom: 10px;
 }
 
-.module p {
-  font-size: 0.9rem;
-  color: #333;
-  line-height: 1.5;
+.loading-bar {
+  width: 80%;
+  height: 10px;
+  background-color: #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+  position: relative;
 }
 
-.module span {
-  font-size: 0.8rem;
-  color: #333;
-  font-weight: bold;
+.loading-bar::after {
+  content: '';
+  display: block;
+  height: 100%;
+  width: 0%;
+  background-color: #76c7c0;
+  animation: loading 3s linear infinite;
+}
+
+@keyframes loading {
+  0% {
+      width: 0%;
+  }
+  100% {
+      width: 100%;
+  }
 }
