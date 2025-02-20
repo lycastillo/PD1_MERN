@@ -1,26 +1,34 @@
-// src/components/WordFlash.js
-
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import './WordFlash.css';
 
 const WordFlash = ({ mediaList }) => {
     const [mediaIndex, setMediaIndex] = useState(0);
     const [processedImage, setProcessedImage] = useState(null);
-    const [isLoading, setIsLoading] = useState(false);
     const [detectedWord, setDetectedWord] = useState('');
+    const [feedback, setFeedback] = useState('');
+    const [selectedWords, setSelectedWords] = useState([]);
+    const [score, setScore] = useState(0);
+    const [incorrectWords, setIncorrectWords] = useState([]);
+    const [isRoundOver, setIsRoundOver] = useState(false); // Track if round is over
     const webcamRef = useRef(null);
 
+    // Randomly select 5 words
+    useEffect(() => {
+        const shuffled = [...mediaList].sort(() => 0.5 - Math.random());
+        setSelectedWords(shuffled.slice(0, 5));
+    }, [mediaList]);
+
     const handleCheckSpelling = async () => {
+        const currentWord = selectedWords[mediaIndex]?.word.toLowerCase();
+        const imageSrc = webcamRef.current.getScreenshot();
+
+        if (!imageSrc) {
+            alert('Unable to capture an image. Please try again.');
+            return;
+        }
+
         try {
-            const imageSrc = webcamRef.current.getScreenshot();
-            if (!imageSrc) {
-                alert('Unable to capture an image. Please try again.');
-                return;
-            }
-
-            setIsLoading(true);
-
             const formData = new FormData();
             formData.append('image', dataURItoBlob(imageSrc));
 
@@ -35,11 +43,18 @@ const WordFlash = ({ mediaList }) => {
 
             const detectionData = await response.json();
             setProcessedImage(`data:image/jpeg;base64,${detectionData.processed_image}`);
-            setDetectedWord(detectionData.detected_word || 'No word detected');
+            const detected = detectionData.detected_word || 'No word detected';
+            setDetectedWord(detected);
+
+            if (detected.toLowerCase() === currentWord) {
+                setScore((prev) => prev + 1);
+                setFeedback('Correct!');
+            } else {
+                setFeedback(`Wrong. Detected: "${detected}". Correct spelling is: "${currentWord}".`);
+                setIncorrectWords((prev) => [...prev, selectedWords[mediaIndex]]);
+            }
         } catch (error) {
             console.error('Error during detection:', error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -55,69 +70,78 @@ const WordFlash = ({ mediaList }) => {
     };
 
     const handleNextWord = () => {
-        if (mediaIndex < mediaList.length - 1) {
+        if (mediaIndex < selectedWords.length - 1) {
+            // Move to the next word
             setMediaIndex(mediaIndex + 1);
             setProcessedImage(null);
             setDetectedWord('');
+            setFeedback('');
         } else {
-            alert('You have completed all the words!');
+            // End the round
+            setIsRoundOver(true);
         }
     };
 
     return (
         <div className="word-flash">
-            <div className="layout-container">
-                {/* Left: Camera Section */}
+            {/* Camera Section */}
+            {!isRoundOver && (
                 <div className="camera-section">
-                    <h3>Camera Feed</h3>
-                    <div className="camera-wrapper">
-                        <Webcam
-                            ref={webcamRef}
-                            screenshotFormat="image/jpeg"
-                            videoConstraints={{ width: 300, height: 300 }}
-                        />
-                    </div>
-                    <button onClick={handleCheckSpelling}>Check</button>
+                    <Webcam
+                        ref={webcamRef}
+                        screenshotFormat="image/jpeg"
+                        videoConstraints={{ width: 300, height: 300 }}
+                    />
+                    <button onClick={handleCheckSpelling} className="check-button">
+                        Check
+                    </button>
                 </div>
+            )}
 
-                {/* Center: Word Image and Progress Bar */}
-                <div className="center-section">
-                    {mediaList.length > 0 && mediaIndex < mediaList.length && (
-                        <>
-                            <img
-                                src={mediaList[mediaIndex].imagePath}
-                                alt={mediaList[mediaIndex].word}
-                                className="flash-image"
-                            />
-                            <audio src={mediaList[mediaIndex].audioPath} autoPlay />
-                            <div className="progress-bar-container">
-                                <div
-                                    className="progress-bar"
-                                    style={{ width: `${((mediaIndex + 1) / mediaList.length) * 100}%` }}
-                                ></div>
-                            </div>
-                        </>
+            {/* Flashing Word Section */}
+            {!isRoundOver && (
+                <div className="word-section">
+                    <img
+                        src={selectedWords[mediaIndex]?.imagePath}
+                        alt={selectedWords[mediaIndex]?.word}
+                        className="word-image"
+                    />
+                    <audio src={selectedWords[mediaIndex]?.audioPath} autoPlay />
+                    <div className="progress-bar-container">
+                        <div
+                            className="progress-bar"
+                            style={{
+                                width: `${((mediaIndex + 1) / selectedWords.length) * 100}%`,
+                            }}
+                        ></div>
+                    </div>
+                    <button onClick={handleNextWord} className="next-button">
+                        {mediaIndex < selectedWords.length - 1 ? 'Next Word' : 'End Round'}
+                    </button>
+                    <h2 className="feedback-text">{feedback || 'Detected Word: ' + detectedWord}</h2>
+                </div>
+            )}
+
+            {/* Score Section */}
+            {isRoundOver && (
+                <div className="score-section">
+                    <h2>Round Complete!</h2>
+                    <p>Your Score: {score}/{selectedWords.length}</p>
+                    {incorrectWords.length > 0 ? (
+                        <button onClick={() => window.location.reload()}>Retry Mistakes</button>
+                    ) : (
+                        <button onClick={() => window.location.reload()}>Restart</button>
                     )}
                 </div>
+            )}
 
-                {/* Right: Processed Image and Detected Word */}
-                <div className="detection-section">
-                    <h3>Detection Results</h3>
-                    <div className="processed-wrapper">
-                        {isLoading ? (
-                            <div className="loading-spinner">Loading...</div>
-                        ) : (
-                            processedImage && (
-                                <>
-                                    <img src={processedImage} alt="Processed" className="processed-image" />
-                                    <h4 className="detected-word">Detected Word: {detectedWord}</h4>
-                                </>
-                            )
-                        )}
-                    </div>
-                    <button onClick={handleNextWord}>Next Word</button>
+            {/* Processed Image Section */}
+            {!isRoundOver && processedImage && (
+                <div className="processed-section">
+                    <h3>Processed Image</h3>
+                    <img src={processedImage} alt="Processed" className="processed-image" />
                 </div>
-            </div>
+            )}
         </div>
     );
 };

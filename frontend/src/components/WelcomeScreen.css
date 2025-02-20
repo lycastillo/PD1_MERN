@@ -1,56 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
+
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Lilita One', sans-serif;
+  overflow: hidden;
+}
 
 .welcome-screen {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: Arial, sans-serif;
-    position: relative;
+  width: 100%;
+  max-width: 1920px;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+}
+
+/* Left Side - Image (Moved Left) */
+.image-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.main-image {
+  width: 680px; /* Slightly reduced */
+  height: 95vh;
+  object-fit: contain;
+  position: relative;
+  left: -150px; /* Move left */
+}
+
+/* Right Side - Menu (Move Further Left) */
+.menu-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  flex: 1;
+  justify-items: center;
+  align-items: center;
+  margin-left: -240px; /* Move buttons even further left */
+}
+
+/* Button Styles */
+.menu-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: 'Lilita One', sans-serif;
+  text-transform: uppercase;
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2);
+  font-size: 36px;
+  padding: 30px 0;
+}
+
+/* Adjusted button sizes */
+.play-now, .progress-tracker {
+  width: 380px;
+  height: 250px;
+}
+
+.how-to-play, .settings {
+  width: 380px;
+  height: 250px;
+}
+
+/* Button Colors */
+.play-now {
+  background-color: #E8F56B;
+  color: #D94924;
+}
+
+.how-to-play {
+  background-color: #F642FD;
+  color: white;
+}
+
+.settings {
+  background-color: #707AD4;
+  color: white;
+}
+
+.progress-tracker {
+  background-color: #D94924;
+  color: yellow;
+}
+
+/* Button Images */
+.menu-button img {
+  width: 160px;
+  height: auto;
+  margin-bottom: 8px;
+}
+
+/* Button Hover Effect */
+.menu-button:hover {
+  animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  50% { transform: translateX(5px); }
+  75% { transform: translateX(-3px); }
+}
+
+/* Wipe Transition */
+.wipe-transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #E8F56B;
+  animation: wipeDown 0.4s ease-in-out forwards;
+  z-index: 10;
+}
+
+@keyframes wipeDown {
+  0% {
+    transform: translateY(-100%);
   }
-  
-  .welcome-screen h1 {
-    font-size: 3rem;
-    color: #3e91a0;
-    margin-bottom: 20px;
+  100% {
+    transform: translateY(0);
   }
-  
-  .name-input-container {
-    background-color: #f4a261;
-    padding: 20px;
-    padding-right: 40px; 
-    border-radius: 8px;
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .name-input-container label {
-    display: block;
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 8px;
-  }
-  
-  .name-input-container input {
-    width: 100%;
-    padding: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 1rem;
-    outline: none;
-    text-align: center;
-  }
-  
-  button {
-    padding: 10px 20px;
-    font-size: 1rem;
-    color: #333;
-    background-color: #f4a261;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  
-  button:hover {
-    background-color: #e76f51;
-  }
-  
+}

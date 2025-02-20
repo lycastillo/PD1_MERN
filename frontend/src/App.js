@@ -3,6 +3,8 @@ import WelcomeScreen from "./components/WelcomeScreen";
 import ModuleSelection from "./components/ModuleSelection";
 import WordFlash from "./components/WordFlash";
 import SpellingPage from "./components/SpellingPage"; // Import the SpellingPage component
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import WhoIsPlaying from "./components/WhoIsPlaying";
 import './App.css';
 
 function App() {
@@ -19,7 +21,7 @@ function App() {
 
   const handleModuleSelect = (module) => {
     setSelectedModule(module);
-    setIsWordFlashCompleted(false); // Reset WordFlash completion status
+    setIsWordFlashCompleted(false);
   };
 
   const handleBackToHome = () => {
@@ -30,29 +32,34 @@ function App() {
 
   const handleWordFlashComplete = (wordDetails) => {
     setIsWordFlashCompleted(true);
-    setSelectedWord(wordDetails); // Store the word details (word, audioPath, imagePath)
+    setSelectedWord(wordDetails);
   };
 
   return (
-    <div className="App">
-      {isWordFlashCompleted ? (
-        <SpellingPage
-          word={selectedWord.word}
-          audioPath={selectedWord.audioPath}
-          imagePath={selectedWord.imagePath}
-        />
-      ) : selectedModule ? (
-        <WordFlash
-          module={selectedModule}
-          onBackToHome={handleBackToHome}
-          onComplete={handleWordFlashComplete} // Pass a callback to handle completion
-        />
-      ) : showModuleSelection ? (
-        <ModuleSelection name={name} onSelectModule={handleModuleSelect} />
-      ) : (
-        <WelcomeScreen onContinue={handleContinue} />
-      )}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<WelcomeScreen onContinue={handleContinue} />} />
+        <Route path="/who-is-playing" element={<WhoIsPlaying />} />
+      </Routes>
+
+      <div className="App">
+        {isWordFlashCompleted ? (
+          <SpellingPage
+            word={selectedWord.word}
+            audioPath={selectedWord.audioPath}
+            imagePath={selectedWord.imagePath}
+          />
+        ) : selectedModule ? (
+          <WordFlash
+            module={selectedModule}
+            onBackToHome={handleBackToHome}
+            onComplete={handleWordFlashComplete}
+          />
+        ) : showModuleSelection ? (
+          <ModuleSelection name={name} onSelectModule={handleModuleSelect} />
+        ) : null}
+      </div>
+    </Router>
   );
 }
 
