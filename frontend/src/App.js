@@ -6,6 +6,7 @@ import SpellingPage from "./components/SpellingPage"; // Import the SpellingPage
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WhoIsPlaying from "./components/WhoIsPlaying";
 import './App.css';
+import ProgressTracker from "./components/ProgressTracker";
 
 function App() {
   const [name, setName] = useState("");
@@ -38,8 +39,10 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<WelcomeScreen onContinue={handleContinue} />} />
+      <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
+        <Route path="/progress-tracker" element={<ProgressTracker />} /> {/* New route */}
+        
       </Routes>
 
       <div className="App">

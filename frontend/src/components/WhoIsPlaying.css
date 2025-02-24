@@ -6,123 +6,321 @@ body, html {
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #E8F56B;
-}
-
-/* Transition Effect */
-.hidden-screen {
-  transform: translateY(-100%);
-  opacity: 0;
-}
-
-.show-screen {
-  transform: translateY(0);
-  opacity: 1;
-  transition: transform 0.4s ease-out, opacity 0.5s ease-out;
+  background-color: #E8F56B !important; /* Ensure yellow background */
 }
 
 .who-playing-screen {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  position: relative;
-  background-color: #E8F56B;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: #E8F56B !important; /* Fix the yellow background */
+  z-index: 1;
 }
 
-/* Title */
+/* 🔹 Title */
 .title {
   font-size: 80px;
   font-weight: bold;
   text-transform: uppercase;
   color: #782600;
   text-shadow: 5px 5px 0 #fff;
-  z-index: 2;
   position: absolute;
-  top: 30px;
+  top: 35px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  z-index: 10;
 }
 
-/* Background Watermark */
+/* 🔹 Background Watermark */
 .background-watermark {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 500%;
+  width: 500px;
+  max-width: 800px;
   height: auto;
   opacity: 0.2;
   z-index: 0;
 }
 
-/* Logo (Top Left) */
+/* 🔹 Top Left Logo */
 .top-left-logo {
-  position: absolute;
-  top: 20px;
-  left: -550px;
-  width: 100px;
-  z-index: 1;
+  position: fixed; /* Ensures it's positioned on top */
+  top: 30%;
+  right: 95%; /* Moves it to the top-left corner */
+  width: 80px; /* Adjust size */
+  height: auto;
+  z-index: 1000; /* Keeps it visible above other elements */
 }
 
-/* Back Button */
+/* 🔹 Back Button */
 .back-button {
-  position: absolute;
-  top: 20px;
-  right: -550px;
+  position: fixed; /* Keep it fixed */
+  top: 30%;
+  left: 95%;
+  transform: translate(-50%, 20px); /* Slightly below the logo */
   background-color: #F642FD;
   color: white;
-  font-size: 20px;
+  font-size: 15px;
   border: none;
   border-radius: 20px;
-  padding: 10px 20px;
+  padding: 5px 12px; /* Adjusted padding */
   cursor: pointer;
+  z-index: 1000; /* Ensure it's on top */
+  display: block; /* Ensure it's visible */
+  width: fit-content; /* Adjusts width to fit text */
+  min-width: 60px; /* Prevents it from being too small */
+  max-width: 120px; /* Prevents it from being too wide */
+  text-align: center; /* Ensures text is centered */
+  white-space: nowrap; /* Prevents text from breaking */
+}
+
+
+/* 🔹 Players Section - Ensuring 4+ Profiles & Scroll */
+.players-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  width: 900px;
+  max-width: 100%;
+  max-height: 400px; /* Prevents excessive growth */
+  overflow-y: auto; /* Enables scrolling */
+  padding: 10px;
+  margin-top: 120px;
   z-index: 1;
 }
 
-/* Players Section */
-.players-container {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 120px;
+/* 🔹 Themed Scrollbar */
+.players-container::-webkit-scrollbar {
+  width: 12px; /* Adjust scrollbar width */
 }
 
-/* Player Boxes */
+.players-container::-webkit-scrollbar-thumb {
+  background-color: #D94924; /* Matches player boxes */
+  border-radius: 10px;
+}
+
+.players-container::-webkit-scrollbar-track {
+  background-color: #782600; /* Darker background for contrast */
+  border-radius: 10px;
+}
+
+/* 🔹 Player Boxes - Adjusted to Fit 4 in a Row */
+/* 🔹 Player Box - Add Position Relative for "X" */
 .player-box {
   background-color: #D94924;
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border-radius: 20px;
+  flex-shrink: 0;
+  position: relative;
+  transition: all 0.3s ease-in-out;
+}
+
+/* 🔹 "X" Delete Button (Hidden by Default) */
+.delete-player {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #F642FD; /* Pinkish Red */
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  font-weight: bold;
+  display: none;
+  cursor: pointer;
+}
+
+/* 🔹 Show Delete Button in Delete Mode */
+.manage-mode .delete-player {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔹 Shaking Animation for Delete Mode */
+.manage-mode .player-box {
+  animation: shake 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes shake {
+  0% { transform: rotate(0); }
+  25% { transform: rotate(2deg); }
+  50% { transform: rotate(-2deg); }
+  75% { transform: rotate(2deg); }
+  100% { transform: rotate(-2deg); }
+}
+
+/* 🔹 Delete Confirmation Dialog */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* 🔹 Dialog Box */
+.dialog-box {
+  background-color: #707AD4;
+  padding: 25px;
+  border-radius: 20px;
+  animation: bounceIn 0.7s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* 🔹 Inner Box */
+.inner-box {
+  background-color: #2F55AA;
+  padding: 30px;
   border-radius: 15px;
-  z-index: 1;
+  text-align: center;
+  width: 400px;
 }
 
+/* 🔹 Delete Confirmation Buttons */
+.confirm-button, .cancel-button {
+  background-color: #F642FD;
+  color: white;
+  font-size: 20px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 20px;
+  cursor: pointer;
+  margin: 10px;
+}
+
+.cancel-button {
+  background-color: #D94924;
+}
+
+/* 🔹 Bounce Animation */
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+
+/* 🔹 Player Initial */
 .player-initial {
-  font-size: 60px;
+  font-size: 70px;
   color: yellow;
-  text-shadow: 3px 3px 0 #782600;
+  text-shadow: 4px 4px 0 #782600;
 }
 
+/* 🔹 Player Name */
 .player-name {
   color: #782600;
-  font-size: 20px;
+  font-size: 22px;
   margin-top: 5px;
 }
 
-/* Add Player Box */
+/* 🔹 When More Players Exist, Adjust to Fit 5 in One Row */
+@media (max-width: 1200px) {
+  .players-container {
+    grid-template-columns: repeat(5, 1fr); /* 5 players per row */
+    max-height: 450px;
+    overflow-y: auto;
+  }
+
+  .player-box {
+    width: 160px;
+    height: 160px;
+  }
+
+  .player-initial {
+    font-size: 60px;
+  }
+
+  .player-name {
+    font-size: 21px;
+  }
+}
+
+
+
+/* 🔹 Initially Centered Add Player Button */
 .add-player-box {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease-in-out;
   z-index: 2;
 }
 
+.add-player-box p {
+  margin-top: 5px; /* Change this from 35px to 5px */
+  font-size: 30px; /* Slightly reduce text size if needed */
+}
+
+/* 🔹 Move Add Player Button Below Players */
+.players-container.has-players .add-player-box {
+  position: relative;
+  top: auto;
+  left: auto;
+  transform: none;
+  order: 999; /* Ensures it moves to the last spot */
+  margin-left: 15px;
+  margin-top: 0; /* Prevents unnecessary vertical movement */
+}
+
+/* 🔹 Move "Add Player" Button Beside the Last Player */
+.players-container.has-players {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 600px;
+  height: auto;
+  position: relative;
+  margin-top: 120px;
+  z-index: 1;
+}
+
+/* 🔹 "Add Player" Button Moves to the Right of Players */
+.players-container.has-players .add-player-box {
+  position: relative;
+  top: unset;
+  left: unset;
+  transform: none;
+  margin-left: 20px;
+  order: 999; /* Ensures it moves to the last position */
+}
+
+
+/* 🔹 Add Icon */
 .add-icon {
   background-color: #707AD4;
   color: white;
@@ -141,10 +339,12 @@ body, html {
   font-size: 35px;
 }
 
-/* Manage Players Button */
+/* 🔹 Manage Players Button - Fixed */
 .manage-players {
   position: absolute;
   bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background-color: #F642FD;
   color: white;
   font-size: 18px;
@@ -153,4 +353,80 @@ body, html {
   padding: 10px 25px;
   cursor: pointer;
   z-index: 1;
+}
+
+/* 🔹 Background Blur Effect */
+.blur-background::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(6px);
+  z-index: 4;
+}
+
+/* 🔹 Dialog Overlay */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+}
+
+/* 🔹 Dialog Box */
+.dialog-box {
+  background-color: #707AD4;
+  padding: 25px;
+  border-radius: 20px;
+  animation: bounceIn 0.5s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 🔹 Inner Box */
+.inner-box {
+  background-color: #2F55AA;
+  padding: 30px;
+  border-radius: 15px;
+  text-align: center;
+  width: 400px;
+}
+
+/* 🔹 Input Field */
+.inner-box input {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 5px;
+  font-size: 20px;
+  margin-top: 15px;
+  outline: none;
+}
+
+/* 🔹 Enter Button */
+.enter-button {
+  background-color: #F642FD;
+  color: white;
+  font-size: 22px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 25px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+/* 🔹 Bounce Animation */
+@keyframes bounceIn {
+  0% { transform: scale(0); opacity: 0; }
+  50% { transform: scale(1.1); opacity: 1; }
+  100% { transform: scale(1); }
 }

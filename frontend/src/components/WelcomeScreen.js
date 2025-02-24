@@ -49,10 +49,11 @@ const WelcomeScreen = () => {
           <span>SETTINGS</span>
         </button>
 
-        <button className="menu-button progress-tracker">
-          <img src="/new5.png" alt="Progress Tracker" />
-          <span>PROGRESS TRACKER</span>
-        </button>
+        <button className="menu-button progress-tracker" onClick={() => navigate("/progress-tracker")}>
+  <img src="/new5.png" alt="Progress Tracker" />
+  <span>PROGRESS TRACKER</span>
+</button>
+
       </div>
     </div>
   );
