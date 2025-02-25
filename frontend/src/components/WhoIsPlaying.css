@@ -63,25 +63,19 @@ body, html {
 
 /* 🔹 Back Button */
 .back-button {
-  position: fixed; /* Keep it fixed */
-  top: 30%;
-  left: 95%;
-  transform: translate(-50%, 20px); /* Slightly below the logo */
+  position: absolute;
+  top: 15px;
+  right: 20px;
   background-color: #F642FD;
   color: white;
-  font-size: 15px;
+  font-size: 18px;
   border: none;
   border-radius: 20px;
-  padding: 5px 12px; /* Adjusted padding */
+  padding: 10px 20px;
   cursor: pointer;
-  z-index: 1000; /* Ensure it's on top */
-  display: block; /* Ensure it's visible */
-  width: fit-content; /* Adjusts width to fit text */
-  min-width: 60px; /* Prevents it from being too small */
-  max-width: 120px; /* Prevents it from being too wide */
-  text-align: center; /* Ensures text is centered */
-  white-space: nowrap; /* Prevents text from breaking */
+  z-index: 3;
 }
+
 
 
 /* 🔹 Players Section - Ensuring 4+ Profiles & Scroll */

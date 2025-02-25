@@ -115,9 +115,9 @@ body, html {
   margin-top: 90px;
   padding: 10px;
   font-size: 18px;
-  border: 2px solid #F642FD;
-  background-color: white;
-  color: #782600;
+  border: 3px solid #33cc33;
+  background-color: #E8F56B;
+  color: black;
   border-radius: 10px;
   cursor: pointer;
 }
