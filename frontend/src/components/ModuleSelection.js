@@ -3,25 +3,25 @@ import WordFlash from './WordFlash';
 import './ModuleSelection.css';
 
 const ModuleSelection = () => {
-    const [loading, setLoading] = useState(true); // Controls the loading screen
-    const [mediaList, setMediaList] = useState([]); // Stores the list of words
-    const [error, setError] = useState(null); // Error handling state
+    const [loading, setLoading] = useState(true); 
+    const [mediaList, setMediaList] = useState([]); 
+    const [error, setError] = useState(null); 
 
     useEffect(() => {
         const fetchAllWords = async () => {
             try {
-                console.log("Fetching all words...");
+                console.log("Fetching words...");
                 const response = await fetch('http://localhost:5000/api/words/all');
                 if (!response.ok) {
                     throw new Error(`Failed to fetch words: ${response.statusText}`);
                 }
                 const data = await response.json();
-                console.log("Fetched words:", data); // Log the fetched data
+                console.log("Fetched words:", data); 
                 if (!data || data.length === 0) {
                     throw new Error("No words found in the database.");
                 }
 
-                // Map the data for frontend use
+                
                 setMediaList(
                     data.map(word => ({
                         word: word.word,
@@ -30,14 +30,14 @@ const ModuleSelection = () => {
                     }))
                 );
 
-                // Ensure loading page is shown for at least 2 seconds
+                
                 setTimeout(() => {
-                    setLoading(false); // Transition away from loading state
-                }, 2000); // 2-second delay
+                    setLoading(false); 
+                }, 2000); 
             } catch (err) {
                 console.error("Error fetching words:", err);
                 setError(err.message);
-                setLoading(false); // Allow error to display
+                setLoading(false); 
             }
         };
 
@@ -45,7 +45,7 @@ const ModuleSelection = () => {
     }, []);
 
     if (loading) {
-        // Display loading bar while fetching words
+        
         return (
             <div className="module-selection">
                 <h1>Loading Words...</h1>
@@ -55,7 +55,7 @@ const ModuleSelection = () => {
     }
 
     if (error) {
-        // Display error message if something goes wrong
+        
         return (
             <div className="module-selection">
                 <h1>Error Loading Words</h1>
@@ -64,7 +64,7 @@ const ModuleSelection = () => {
         );
     }
 
-    // Render the WordFlash component after loading
+    
     return <WordFlash mediaList={mediaList} />;
 };
 

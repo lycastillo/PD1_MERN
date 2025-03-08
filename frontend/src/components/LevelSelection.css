@@ -19,27 +19,35 @@
 }
 
 .word-length-container {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 10px; /* Adjusted to balance spacing */
+  display: grid;
+  grid-template-columns: repeat(5, 1fr); /* 5 buttons per row */
+  gap: 20px; /* Space between buttons */
+  margin-bottom: 10px; 
+  justify-content: center;
+  align-items: center;
+  max-width: 90vw; /* Prevents overflow */
 }
 
 .difficulty-container {
   display: flex;
   gap: 40px;
-  margin-bottom: 140px; /* 🔹 Reduced margin-bottom to move it higher */
-  margin-top: 10px; /* 🔹 Moves it upward */
+  margin-bottom: 140px; 
+  margin-top: 10px; 
 }
 
 .word-button {
   background-color: #FFED00;
   color: black;
-  font-size: 30px;
+  font-size: 14px; /* Smaller text */
   font-weight: bold;
-  padding: 15px 30px;
+  padding: 10px 20px; /* Reduced padding */
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
+  width: 100%; /* Makes buttons responsive */
+  max-width: 120px; /* Limits button width */
+  height: 50px; /* Smaller button height */
+  text-align: center;
 }
 
 .word-button:hover {

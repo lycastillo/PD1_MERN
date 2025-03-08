@@ -6,8 +6,8 @@ import SpellingPage from "./components/SpellingPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WhoIsPlaying from "./components/WhoIsPlaying";
 import ProgressTracker from "./components/ProgressTracker";
-import HowToPlay from "./components/HowToPlay"; // ✅ Import HowToPlay component
-import LevelSelection from "./components/LevelSelection"; // ✅ Import Level Selection Page
+import HowToPlay from "./components/HowToPlay"; 
+import LevelSelection from "./components/LevelSelection"; 
 import './App.css';
 
 function App() {
@@ -43,9 +43,9 @@ function App() {
       <Routes>
       <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
-        <Route path="/select-level/:playerId" element={<LevelSelection />} /> {/* ✅ Added Route */}
+        <Route path="/select-level/:playerId" element={<LevelSelection />} /> 
         <Route path="/progress-tracker" element={<ProgressTracker />} />
-        <Route path="/how-to-play" element={<HowToPlay />} /> {/* ✅ New Route for HowToPlay */}
+        <Route path="/how-to-play" element={<HowToPlay />} /> 
       </Routes>
 
       <div className="App">
