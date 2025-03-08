@@ -12,7 +12,7 @@ const WhoIsPlaying = () => {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ✅ Fetch players when the page loads
+  // ✅ Fetch players from database
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/players`)
@@ -25,33 +25,15 @@ const WhoIsPlaying = () => {
       });
   }, []);
 
-  // ✅ Add a new player
-  const handleEnter = () => {
-    console.log("✅ Enter button clicked");
-
-    if (!newPlayerName.trim()) {
-      setErrorMessage("Name cannot be empty.");
-      return;
-    }
-
-    console.log("🔄 Sending API request to add player...");
-
-    axios
-      .post(`${API_BASE_URL}/players`, { name: newPlayerName })
+  // ✅ Function to update selected player in database
+  const selectPlayer = (playerName) => {
+    axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
       .then((res) => {
-        console.log("✅ Player added successfully:", res.data);
-        setPlayers([...players, res.data]); // Add player to list
-        setNewPlayerName(""); 
-        setShowDialog(false); 
-        setErrorMessage("");
+        console.log(`✅ Player Updated: ${playerName}`);
+        navigate(`/select-level`); // Navigate to Level Selection
       })
       .catch((err) => {
-        console.error("❌ Error adding player:", err);
-        if (err.response && err.response.data.message) {
-          setErrorMessage(err.response.data.message);
-        } else {
-          setErrorMessage("Something went wrong.");
-        }
+        console.error("❌ Error updating player:", err);
       });
   };
 
@@ -66,7 +48,7 @@ const WhoIsPlaying = () => {
             <button
               key={player._id}
               className="player-box"
-              onClick={() => navigate(`/select-level/${player._id}`)}
+              onClick={() => selectPlayer(player.name)} // ✅ Click sends to DB
             >
               <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
               <div className="player-name">{player.name}</div>
@@ -93,10 +75,9 @@ const WhoIsPlaying = () => {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               placeholder="Enter name"
-              onKeyPress={(e) => e.key === "Enter" && handleEnter()}
             />
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <button onClick={handleEnter}>Enter</button> 
+            <button onClick={() => selectPlayer(newPlayerName)}>Enter</button> 
           </div>
         </div>
       )}

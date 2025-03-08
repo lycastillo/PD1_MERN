@@ -20,12 +20,32 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const db = mongoose.connection;
 
-// ✅ Update Module in MongoDB
+// ✅ Update Selected Player
+app.put("/api/updatePlayer", async (req, res) => {
+    try {
+        const { playerName } = req.body;
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Player: playerName } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Player updated to ${playerName}` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Player:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Update Module
 app.put("/api/updateModule", async (req, res) => {
     try {
         const { moduleNumber } = req.body;
         const result = await db.collection("Level_Select").updateOne(
-            {},  // ✅ Find the first document
+            {},  
             { $set: { Module: moduleNumber } }
         );
 
@@ -40,12 +60,12 @@ app.put("/api/updateModule", async (req, res) => {
     }
 });
 
-// ✅ Update Level in MongoDB
+// ✅ Update Level
 app.put("/api/updateLevel", async (req, res) => {
     try {
         const { levelNumber } = req.body;
         const result = await db.collection("Level_Select").updateOne(
-            {},  // ✅ Find the first document
+            {},  
             { $set: { Level: levelNumber } }
         );
 
