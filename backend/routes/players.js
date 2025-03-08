@@ -1,52 +1,56 @@
 const express = require("express");
 const router = express.Router();
-const Player = require("../models/Player");
+const mongoose = require("mongoose");
 
-// 🔹 Fetch all players from DB
+// Define MongoDB Schema
+const playerSchema = new mongoose.Schema({ name: String });
+const Player = mongoose.model("Player", playerSchema, "players");
+
+// ✅ GET all players
 router.get("/", async (req, res) => {
-  try {
-    const players = await Player.find();
-    res.json(players);
-  } catch (err) {
-    res.status(500).json({ message: "Error fetching players" });
-  }
+    try {
+        const players = await Player.find();
+        res.json(players);
+    } catch (err) {
+        console.error("❌ Error fetching players:", err);
+        res.status(500).json({ message: "Error fetching players", error: err.message });
+    }
 });
 
-// 🔹 Add a new player (Prevent Duplicates)
+// ✅ POST: Add a new player
 router.post("/", async (req, res) => {
-  const { name } = req.body;
+    try {
+        if (!req.body.name) {
+            return res.status(400).json({ message: "Player name is required" });
+        }
 
-  try {
-    if (!name) {
-      return res.status(400).json({ message: "Name is required" });
+        // Prevent duplicate names
+        const existingPlayer = await Player.findOne({ name: req.body.name });
+        if (existingPlayer) {
+            return res.status(400).json({ message: "This name already exists!" });
+        }
+
+        const newPlayer = new Player({ name: req.body.name });
+        await newPlayer.save();
+        res.json(newPlayer);
+    } catch (err) {
+        console.error("❌ Error adding player:", err);
+        res.status(500).json({ message: "Error adding player", error: err.message });
     }
-
-    // Check for duplicates
-    const existingPlayer = await Player.findOne({ name: name.trim() });
-    if (existingPlayer) {
-      return res.status(400).json({ message: "This name already exists!" });
-    }
-
-    // Save new player
-    const newPlayer = new Player({ name: name.trim() });
-    await newPlayer.save();
-    res.status(201).json(newPlayer);
-  } catch (err) {
-    res.status(500).json({ message: "Error adding player" });
-  }
 });
 
-// 🔹 Delete a player
-router.delete("/:name", async (req, res) => {
-  try {
-    const deletedPlayer = await Player.findOneAndDelete({ name: req.params.name });
-    if (!deletedPlayer) {
-      return res.status(404).json({ message: "Player not found" });
+// ✅ DELETE: Remove a player
+router.delete("/:id", async (req, res) => {
+    try {
+        const deletedPlayer = await Player.findByIdAndDelete(req.params.id);
+        if (!deletedPlayer) {
+            return res.status(404).json({ message: "Player not found" });
+        }
+        res.json({ message: "Player deleted successfully" });
+    } catch (err) {
+        console.error("❌ Error deleting player:", err);
+        res.status(500).json({ message: "Error deleting player", error: err.message });
     }
-    res.json({ message: "Player deleted" });
-  } catch (err) {
-    res.status(500).json({ message: "Error deleting player" });
-  }
 });
 
 module.exports = router;
