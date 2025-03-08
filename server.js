@@ -18,16 +18,15 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// Schema and Model
+// Define Schema for Level_Select Database
 const selectionSchema = new mongoose.Schema({
   Module: Number,
   Level: Number,
-  Initialize: Number,
 });
 
-const Selection = mongoose.model("Selection", selectionSchema, "Module");
+const Selection = mongoose.model("Selection", selectionSchema, "Module"); // Using "Module" collection
 
-// API Route to Update Module
+// API Route to Update Module in Level_Select Database
 app.put("/api/updateModule", async (req, res) => {
   try {
     const { moduleNumber } = req.body;
@@ -43,7 +42,7 @@ app.put("/api/updateModule", async (req, res) => {
   }
 });
 
-// API Route to Update Level
+// API Route to Update Difficulty Level in Level_Select Database
 app.put("/api/updateLevel", async (req, res) => {
   try {
     const { levelNumber } = req.body;
