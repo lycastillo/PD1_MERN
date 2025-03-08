@@ -7,12 +7,12 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
-  const [players, setPlayers] = useState([]);
+  const [players, setPlayers] = useState([]); // ✅ Store players from MongoDB
   const [showDialog, setShowDialog] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ✅ Fetch players from database
+  // ✅ Fetch existing players when the page loads
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/players`)
@@ -25,15 +25,40 @@ const WhoIsPlaying = () => {
       });
   }, []);
 
-  // ✅ Function to update selected player in database
+  // ✅ Function to update selected player in database & redirect
   const selectPlayer = (playerName) => {
     axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
       .then((res) => {
         console.log(`✅ Player Updated: ${playerName}`);
-        navigate(`/select-level`); // Navigate to Level Selection
+        navigate("/select-level"); // ✅ Redirect to Level Selection
       })
       .catch((err) => {
         console.error("❌ Error updating player:", err);
+      });
+  };
+
+  // ✅ Function to add a new player
+  const handleEnter = () => {
+    if (!newPlayerName.trim()) {
+      setErrorMessage("Name cannot be empty.");
+      return;
+    }
+
+    axios
+      .post(`${API_BASE_URL}/players`, { name: newPlayerName })
+      .then((res) => {
+        setPlayers([...players, res.data]); // ✅ Add new player to list
+        setNewPlayerName(""); 
+        setShowDialog(false); 
+        setErrorMessage("");
+      })
+      .catch((err) => {
+        console.error("❌ Error adding player:", err);
+        if (err.response && err.response.data.message) {
+          setErrorMessage(err.response.data.message);
+        } else {
+          setErrorMessage("Something went wrong.");
+        }
       });
   };
 
@@ -41,14 +66,14 @@ const WhoIsPlaying = () => {
     <div className="who-playing-screen">
       <h1 className="title">WHO'S PLAYING?</h1>
 
-      {/* Players List */}
+      {/* ✅ Players List */}
       <div className="players-container">
         {players.length > 0 ? (
           players.map((player) => (
             <button
               key={player._id}
               className="player-box"
-              onClick={() => selectPlayer(player.name)} // ✅ Click sends to DB
+              onClick={() => selectPlayer(player.name)} // ✅ Click updates DB
             >
               <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
               <div className="player-name">{player.name}</div>
@@ -59,13 +84,13 @@ const WhoIsPlaying = () => {
         )}
       </div>
 
-      {/* Add Player Button */}
+      {/* ✅ Add Player Button */}
       <button className="add-player-box" onClick={() => setShowDialog(true)}>
         <div className="add-icon">+</div>
         <p>Add Player</p>
       </button>
 
-      {/* Add Player Dialog */}
+      {/* ✅ Add Player Dialog */}
       {showDialog && (
         <div className="dialog-overlay">
           <div className="dialog-box">
@@ -75,9 +100,10 @@ const WhoIsPlaying = () => {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               placeholder="Enter name"
+              onKeyPress={(e) => e.key === "Enter" && handleEnter()}
             />
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <button onClick={() => selectPlayer(newPlayerName)}>Enter</button> 
+            <button onClick={handleEnter}>Enter</button> 
           </div>
         </div>
       )}
