@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios"; // API requests
 import "./WhoIsPlaying.css";
 
+const API_BASE_URL = "https://t36pd2.onrender.com/api/players"; // 🔹 Update to Render backend URL
+
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
@@ -16,10 +18,10 @@ const WhoIsPlaying = () => {
   // Fetch players from the database when the page loads
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/players")
+      .get(API_BASE_URL)
       .then((res) => setPlayers(res.data))
       .catch((err) => console.error("Error fetching players:", err));
-  }, []);
+  }, [players]); // 🔹 Ensure players list updates when modified
 
   // Add a new player
   const handleEnter = () => {
@@ -29,7 +31,7 @@ const WhoIsPlaying = () => {
     }
 
     axios
-      .post("http://localhost:5000/api/players", { name: newPlayerName })
+      .post(API_BASE_URL, { name: newPlayerName })
       .then((res) => {
         setPlayers([...players, res.data]); 
         setNewPlayerName(""); 
@@ -48,7 +50,7 @@ const WhoIsPlaying = () => {
   // Delete a player
   const handleConfirmDelete = () => {
     axios
-      .delete(`http://localhost:5000/api/players/${deletePlayerName}`)
+      .delete(`${API_BASE_URL}/${deletePlayerName}`)
       .then(() => {
         setPlayers(players.filter((player) => player.name !== deletePlayerName));
         setShowDeleteDialog(false);
