@@ -18,13 +18,46 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// ✅ Ensure Players Route Works
-const playerRoutes = require("./routes/players");
-app.use("/api/players", playerRoutes);
+const db = mongoose.connection;
 
-// Root Route (For Testing)
-app.get("/", (req, res) => {
-    res.send("✅ Server is running!");
+// ✅ Update Module in MongoDB
+app.put("/api/updateModule", async (req, res) => {
+    try {
+        const { moduleNumber } = req.body;
+        const result = await db.collection("Level_Select").updateOne(
+            {},  // ✅ Find the first document
+            { $set: { Module: moduleNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Module updated to ${moduleNumber}` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Module:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Update Level in MongoDB
+app.put("/api/updateLevel", async (req, res) => {
+    try {
+        const { levelNumber } = req.body;
+        const result = await db.collection("Level_Select").updateOne(
+            {},  // ✅ Find the first document
+            { $set: { Level: levelNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Level updated to ${levelNumber}` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Level:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
 });
 
 // Start Server

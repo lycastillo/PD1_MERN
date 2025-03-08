@@ -49,7 +49,7 @@ const LevelSelection = () => {
           <button 
             key={index} 
             className="word-button" 
-            onClick={() => updateModule(index + 1)}
+            onClick={() => updateModule(index + 1)} // ✅ Send API request on click
           >
             MODULE {index + 1}
           </button>
@@ -63,7 +63,7 @@ const LevelSelection = () => {
           <button 
             key={index} 
             className="difficulty-button"
-            onClick={() => updateLevel(index + 1)}
+            onClick={() => updateLevel(index + 1)} // ✅ Send API request on click
           >
             {difficulty}
           </button>
