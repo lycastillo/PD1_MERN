@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
+
+.level-selection-screen {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+}
+
+.title {
+  font-size: 70px;
+  font-weight: bold;
+  color: #EF601E;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.word-length-container {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 10px; /* Adjusted to balance spacing */
+}
+
+.difficulty-container {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 140px; /* 🔹 Reduced margin-bottom to move it higher */
+  margin-top: 10px; /* 🔹 Moves it upward */
+}
+
+.word-button {
+  background-color: #FFED00;
+  color: black;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.word-button:hover {
+  background-color: #D9A124;
+}
+
+.difficulty-button {
+  font-size: 30px;
+  font-weight: bold;
+  padding: 15px 30px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.very-easy { background-color: #65DA5A; }
+.easy { background-color: #4CAF50; }
+.normal { background-color: #388E3C; }
+.hard { background-color: #1B5E20; }
+
+.difficulty-button:hover {
+  filter: brightness(85%);
+}
+
+.back-button {
+  background-color: #EF601E;
+  color: white;
+  font-size: 18px;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}

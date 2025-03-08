@@ -1,0 +1,129 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
+
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    background-color: #FF4CFD !important; /* Bright pink background */
+}
+
+/* How To Play Screen */
+.how-to-play-screen {
+    background-color: #FF4CFD !important; /* Bright pink */
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+/* Watermark */
+.background-watermark {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; /* Adjust as needed */
+    max-width: 80%;
+    height: auto;
+    opacity: 0.2; /* Low opacity */
+    z-index: 0; /* Ensure it's behind everything */
+}
+
+/* Title */
+.title {
+    font-size: 80px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #65DA5A; /* Green */
+    text-shadow: 4px 4px 0 #000; /* Black shadow */
+    margin-top: 30px;
+    left: 250px;
+    position: relative;
+    z-index: 1; /* Ensures it appears above the watermark */
+}
+
+/* Steps Container */
+.steps-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 20px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Step Boxes */
+.step-box {
+    background-color: #E8F56B; /* Yellow */
+    color: #65DA5A; /* Dark text */
+    width: 250px;
+    height: 280px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    font-size: 26px;
+    font-weight: bold;
+    text-align: center;
+    text-shadow: 2px 2px 0 #000;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 1;
+}
+
+/* Play Button */
+.play-button {
+    background-color: #E8F56B; /* Yellow */
+    color: black;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    padding: 15px 40px;
+    cursor: pointer;
+    margin-top: 70px;
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.play-button:hover {
+    background-color: #D9A124;
+    color: white;
+}
+
+/* Back Button */
+.back-button {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background-color: #E8F56B;
+    color: black;
+    font-size: 18px;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.back-button:hover {
+    background-color: #D9A124;
+    color: white;
+}
+
+/* Logo */
+.top-left-logo {
+    position: absolute;
+    top: 10px;
+    left: 20px;
+    width: 80px;
+    z-index: 2;
+}

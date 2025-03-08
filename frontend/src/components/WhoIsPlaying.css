@@ -9,6 +9,7 @@ body, html {
   background-color: #E8F56B !important; /* Ensure yellow background */
 }
 
+/* 🔹 Main Container */
 .who-playing-screen {
   width: 100vw;
   height: 100vh;
@@ -19,7 +20,7 @@ body, html {
   position: absolute;
   top: 0;
   left: 0;
-  background-color: #E8F56B !important; /* Fix the yellow background */
+  background-color: #E8F56B !important;
   z-index: 1;
 }
 
@@ -28,16 +29,20 @@ body, html {
   font-size: 80px;
   font-weight: bold;
   text-transform: uppercase;
-  color: #782600;
-  text-shadow: 5px 5px 0 #fff;
-  position: absolute;
-  top: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  z-index: 10;
+  color: #65DA5A; /* Green */
+  text-shadow: 4px 4px 0 #000;
+  text-align: center;
+  width: 100%;
+  position: relative;
+  margin: 0 auto;
+  top: 50px; /* Moves it down slightly */
+  left: 20px;
+  transform: translateX(-18%); /* Ensures perfect centering */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
 }
-
 /* 🔹 Background Watermark */
 .background-watermark {
   position: absolute;
@@ -48,15 +53,15 @@ body, html {
   max-width: 800px;
   height: auto;
   opacity: 0.2;
-  z-index: 0;
+  z-index: -1;
 }
 
 /* 🔹 Top Left Logo */
 .top-left-logo {
   position: fixed; /* Ensures it's positioned on top */
-  top: 30%;
-  right: 95%; /* Moves it to the top-left corner */
-  width: 80px; /* Adjust size */
+  top: 1%;
+  right: 92%; /* Moves it to the top-left corner */
+  width: 100px; /* Adjust size */
   height: auto;
   z-index: 1000; /* Keeps it visible above other elements */
 }
@@ -83,31 +88,32 @@ body, html {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: center;
-  gap: 15px;
-  width: 900px;
+  gap: 20px;
+  width: 800px; /* Adjusted width to fit 4 boxes */
   max-width: 100%;
-  max-height: 400px; /* Prevents excessive growth */
-  overflow-y: auto; /* Enables scrolling */
+  max-height: 400px;
+  overflow-y: auto;
   padding: 10px;
-  margin-top: 120px;
-  z-index: 1;
+  margin-top: 100px; /* Adjusted margin */
+  position: relative;
+  z-index: 10;
 }
 
 /* 🔹 Themed Scrollbar */
 .players-container::-webkit-scrollbar {
-  width: 12px; /* Adjust scrollbar width */
+  width: 10px;
 }
 
 .players-container::-webkit-scrollbar-thumb {
-  background-color: #D94924; /* Matches player boxes */
+  background-color: #D94924;
   border-radius: 10px;
 }
 
 .players-container::-webkit-scrollbar-track {
-  background-color: #782600; /* Darker background for contrast */
+  background-color: #782600;
   border-radius: 10px;
 }
+
 
 /* 🔹 Player Boxes - Adjusted to Fit 4 in a Row */
 /* 🔹 Player Box - Add Position Relative for "X" */
@@ -123,6 +129,13 @@ body, html {
   flex-shrink: 0;
   position: relative;
   transition: all 0.3s ease-in-out;
+}
+
+.players-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
 }
 
 /* 🔹 "X" Delete Button (Hidden by Default) */
@@ -245,6 +258,7 @@ body, html {
   .player-box {
     width: 160px;
     height: 160px;
+    z-index: 999;
   }
 
   .player-initial {
@@ -325,7 +339,7 @@ body, html {
   justify-content: center;
   font-size: 50px;
   border-radius: 50%;
-  z-index: 2;
+  z-index: 999;
 }
 
 .add-player-box p {
@@ -424,3 +438,5 @@ body, html {
   50% { transform: scale(1.1); opacity: 1; }
   100% { transform: scale(1); }
 }
+
+

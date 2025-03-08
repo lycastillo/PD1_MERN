@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // Import axios for API calls
+import axios from "axios"; // API requests
 import "./WhoIsPlaying.css";
 
 const WhoIsPlaying = () => {
@@ -13,7 +13,7 @@ const WhoIsPlaying = () => {
   const [isManageMode, setIsManageMode] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // 🟢 Fetch players from DB when page loads
+  // Fetch players from the database when the page loads
   useEffect(() => {
     axios
       .get("http://localhost:5000/api/players")
@@ -21,7 +21,7 @@ const WhoIsPlaying = () => {
       .catch((err) => console.error("Error fetching players:", err));
   }, []);
 
-  // 🟢 Add a player to DB
+  // Add a new player
   const handleEnter = () => {
     if (!newPlayerName.trim()) {
       setErrorMessage("Name cannot be empty.");
@@ -45,7 +45,7 @@ const WhoIsPlaying = () => {
       });
   };
 
-
+  // Delete a player
   const handleConfirmDelete = () => {
     axios
       .delete(`http://localhost:5000/api/players/${deletePlayerName}`)
@@ -59,22 +59,26 @@ const WhoIsPlaying = () => {
 
   return (
     <div className={`who-playing-screen ${showDialog || showDeleteDialog ? "blur-background" : ""}`}>
+      {/* Background Image */}
+      <img src="/background.png" alt="Watermark" className="background-watermark" />
+
       {/* Top-left Logo */}
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
 
       {/* Back Button */}
       <button className="back-button" onClick={() => navigate("/")}>Back</button>
 
-      {/* Watermark Background */}
-      <img src="/new1.png" alt="Watermark" className="background-watermark" />
-
       {/* Title */}
       <h1 className="title">WHO'S PLAYING?</h1>
 
       {/* Players List */}
       <div className={`players-container ${isManageMode ? "manage-mode" : ""} ${players.length > 0 ? "has-players" : ""}`}>
-        {players.map((player, index) => (
-          <div key={index} className="player-box">
+        {players.map((player) => (
+          <button
+            key={player._id}
+            className="player-box"
+            onClick={() => navigate(`/select-level/${player._id}`)} // Navigates to level selection page
+          >
             <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
             <div className="player-name">{player.name}</div>
 
@@ -87,15 +91,15 @@ const WhoIsPlaying = () => {
                 X
               </button>
             )}
-          </div>
+          </button>
         ))}
 
-        {/* Add Player Button - Moves Beside Last Player */}
+        {/* Add Player Button */}
         {!isManageMode && (
-          <div className={`add-player-box ${players.length > 0 ? "has-players" : ""}`} onClick={() => setShowDialog(true)}>
+          <button className="add-player-box" onClick={() => setShowDialog(true)}>
             <div className="add-icon">+</div>
             <p>Add Player</p>
-          </div>
+          </button>
         )}
       </div>
 

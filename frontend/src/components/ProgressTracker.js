@@ -22,6 +22,9 @@ const ProgressTracker = () => {
       {/* Back Button */}
       <button className="progress-tracker-back-button" onClick={() => navigate("/")}>Back</button>
 
+{/* Watermark Background */}
+<img src="/new1.png" alt="Watermark" className="background-watermark" /> 
+
       {/* Title */}
       <h1 className="progress-tracker-title">PROGRESS TRACKER</h1>
 

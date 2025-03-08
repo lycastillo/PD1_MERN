@@ -95,7 +95,7 @@ body {
 
 .progress-tracker {
   background-color: #D94924;
-  color: yellow;
+  color: #E8F56B;
 }
 
 /* Button Images */
@@ -135,5 +135,40 @@ body {
   }
   100% {
     transform: translateY(0);
+  }
+}
+
+@keyframes wipeDown {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(0%); }
+}
+
+.wipe-animation {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  background-color: #D94924; /* Orange Wipe Effect */
+  top: 0;
+  left: 0;
+  animation: wipeDown 0.6s ease-in-out forwards;
+  z-index: 1000;
+}
+
+.yellow-wipe {
+  background-color: #E8F56B; /* Yellow Background */
+}
+
+/* 🔹 Orange Wipe for Progress Tracker */
+.orange-wipe {
+  background-color: #D94924; /* Orange Background */
+}
+
+/* 🔹 Wipe Animation */
+@keyframes wipeDown {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
   }
 }

@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import WelcomeScreen from "./components/WelcomeScreen";
 import ModuleSelection from "./components/ModuleSelection";
 import WordFlash from "./components/WordFlash";
-import SpellingPage from "./components/SpellingPage"; // Import the SpellingPage component
+import SpellingPage from "./components/SpellingPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WhoIsPlaying from "./components/WhoIsPlaying";
-import './App.css';
 import ProgressTracker from "./components/ProgressTracker";
+import HowToPlay from "./components/HowToPlay"; // ✅ Import HowToPlay component
+import LevelSelection from "./components/LevelSelection"; // ✅ Import Level Selection Page
+import './App.css';
 
 function App() {
   const [name, setName] = useState("");
@@ -41,8 +43,9 @@ function App() {
       <Routes>
       <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
-        <Route path="/progress-tracker" element={<ProgressTracker />} /> {/* New route */}
-        
+        <Route path="/select-level/:playerId" element={<LevelSelection />} /> {/* ✅ Added Route */}
+        <Route path="/progress-tracker" element={<ProgressTracker />} />
+        <Route path="/how-to-play" element={<HowToPlay />} /> {/* ✅ New Route for HowToPlay */}
       </Routes>
 
       <div className="App">

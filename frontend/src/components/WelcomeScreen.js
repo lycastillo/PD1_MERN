@@ -5,12 +5,14 @@ import "./WelcomeScreen.css";
 const WelcomeScreen = () => {
   const navigate = useNavigate();
   const [showWipe, setShowWipe] = useState(false);
+  const [wipeTarget, setWipeTarget] = useState(""); // Track which button is clicked
 
-  const handlePlayNow = () => {
-    setShowWipe(true); // Start transition
+  const handleNavigation = (path) => {
+    setShowWipe(true); // Start wipe effect
+    setWipeTarget(path); // Set target page
     setTimeout(() => {
-      navigate("/who-is-playing"); // Navigate after animation
-    }, 400); // Match animation duration (0.4s)
+      navigate(path); // Navigate after animation
+    }, 400); // Match animation duration
   };
 
   return (
@@ -26,7 +28,7 @@ const WelcomeScreen = () => {
       }}
     >
       {/* Wipe Transition */}
-      {showWipe && <div className="wipe-transition"></div>}
+      {showWipe && <div className={`wipe-transition ${wipeTarget === "/progress-tracker" ? "orange-wipe" : "yellow-wipe"}`}></div>}
 
       {/* Main Content */}
       <div className="image-container">
@@ -34,26 +36,25 @@ const WelcomeScreen = () => {
       </div>
 
       <div className="menu-container">
-        <button className="menu-button play-now" onClick={handlePlayNow}>
+        <button className="menu-button play-now" onClick={() => handleNavigation("/who-is-playing")}>
           <img src="/new2.png" alt="Play Now" />
           <span>PLAY NOW</span>
         </button>
 
-        <button className="menu-button how-to-play">
-          <img src="/new3.png" alt="How to Play" />
-          <span>HOW TO PLAY</span>
-        </button>
+        <button className="menu-button how-to-play" onClick={() => handleNavigation("/how-to-play")}>
+  <img src="/new3.png" alt="How to Play" />
+  <span>HOW TO PLAY</span>
+</button>
 
         <button className="menu-button settings">
           <img src="/new4.png" alt="Settings" />
           <span>SETTINGS</span>
         </button>
 
-        <button className="menu-button progress-tracker" onClick={() => navigate("/progress-tracker")}>
-  <img src="/new5.png" alt="Progress Tracker" />
-  <span>PROGRESS TRACKER</span>
-</button>
-
+        <button className="menu-button progress-tracker" onClick={() => handleNavigation("/progress-tracker")}>
+          <img src="/new5.png" alt="Progress Tracker" />
+          <span>PROGRESS TRACKER</span>
+        </button>
       </div>
     </div>
   );
