@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./LevelSelection.css";
 
@@ -7,8 +7,10 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const LevelSelection = () => {
   const navigate = useNavigate();
+  const { playerId } = useParams(); // ✅ Get playerId from URL
+  console.log("Player ID:", playerId); // ✅ Log playerId to debug
 
-  // ✅ Function to update Module in MongoDB
+  // ✅ Update Module in MongoDB
   const updateModule = (moduleNumber) => {
     axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber })
       .then((res) => {
@@ -19,7 +21,7 @@ const LevelSelection = () => {
       });
   };
 
-  // ✅ Function to update Level in MongoDB
+  // ✅ Update Level in MongoDB
   const updateLevel = (levelNumber) => {
     axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber })
       .then((res) => {
@@ -49,7 +51,7 @@ const LevelSelection = () => {
           <button 
             key={index} 
             className="word-button" 
-            onClick={() => updateModule(index + 1)} // ✅ Send API request on click
+            onClick={() => updateModule(index + 1)}
           >
             MODULE {index + 1}
           </button>
@@ -63,7 +65,7 @@ const LevelSelection = () => {
           <button 
             key={index} 
             className="difficulty-button"
-            onClick={() => updateLevel(index + 1)} // ✅ Send API request on click
+            onClick={() => updateLevel(index + 1)}
           >
             {difficulty}
           </button>

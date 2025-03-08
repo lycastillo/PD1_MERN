@@ -7,30 +7,31 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
-  const [players, setPlayers] = useState([]); // ✅ Store players from MongoDB
+  const [players, setPlayers] = useState([]);
   const [showDialog, setShowDialog] = useState(false);
   const [newPlayerName, setNewPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ✅ Fetch existing players when the page loads
+  // ✅ Fetch existing players from the backend
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/players`)
       .then((res) => {
-        console.log("✅ Players fetched:", res.data);
-        setPlayers(res.data);
+        setPlayers(res.data); // Populate player list
       })
       .catch((err) => {
         console.error("❌ Error fetching players:", err);
       });
   }, []);
 
-  // ✅ Function to update selected player in database & redirect
-  const selectPlayer = (playerName) => {
+  // ✅ Function to select a player and update in DB
+  const selectPlayer = (playerId, playerName) => {
+    // Update the selected player in Level_Select DB
     axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
       .then((res) => {
-        console.log(`✅ Player Updated: ${playerName}`);
-        navigate("/select-level"); // ✅ Redirect to Level Selection
+        console.log(`✅ Player Updated to: ${playerName}`);
+        // Redirect to LevelSelection, passing playerId
+        navigate(`/select-level/${playerId}`);
       })
       .catch((err) => {
         console.error("❌ Error updating player:", err);
@@ -47,7 +48,7 @@ const WhoIsPlaying = () => {
     axios
       .post(`${API_BASE_URL}/players`, { name: newPlayerName })
       .then((res) => {
-        setPlayers([...players, res.data]); // ✅ Add new player to list
+        setPlayers([...players, res.data]); // Add new player to the list
         setNewPlayerName(""); 
         setShowDialog(false); 
         setErrorMessage("");
@@ -73,7 +74,7 @@ const WhoIsPlaying = () => {
             <button
               key={player._id}
               className="player-box"
-              onClick={() => selectPlayer(player.name)} // ✅ Click updates DB
+              onClick={() => selectPlayer(player._id, player.name)} // Select player and redirect
             >
               <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
               <div className="player-name">{player.name}</div>
@@ -100,7 +101,6 @@ const WhoIsPlaying = () => {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               placeholder="Enter name"
-              onKeyPress={(e) => e.key === "Enter" && handleEnter()}
             />
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
             <button onClick={handleEnter}>Enter</button> 
