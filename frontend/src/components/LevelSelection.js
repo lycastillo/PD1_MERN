@@ -8,24 +8,26 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 const LevelSelection = () => {
   const navigate = useNavigate();
 
-  // Function to update Module in MongoDB
-  const updateModule = async (moduleNumber) => {
-    try {
-      const res = await axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber });
-      console.log(res.data.message);
-    } catch (err) {
-      console.error("❌ Error updating module:", err);
-    }
+  // ✅ Function to update Module in MongoDB
+  const updateModule = (moduleNumber) => {
+    axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber })
+      .then((res) => {
+        console.log(`✅ Module Updated to: ${moduleNumber}`);
+      })
+      .catch((err) => {
+        console.error("❌ Error updating module:", err);
+      });
   };
 
-  // Function to update Level in MongoDB
-  const updateLevel = async (levelNumber) => {
-    try {
-      const res = await axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber });
-      console.log(res.data.message);
-    } catch (err) {
-      console.error("❌ Error updating level:", err);
-    }
+  // ✅ Function to update Level in MongoDB
+  const updateLevel = (levelNumber) => {
+    axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber })
+      .then((res) => {
+        console.log(`✅ Level Updated to: ${levelNumber}`);
+      })
+      .catch((err) => {
+        console.error("❌ Error updating level:", err);
+      });
   };
 
   return (
@@ -38,15 +40,10 @@ const LevelSelection = () => {
         backgroundRepeat: "no-repeat",
         height: "100vh",
         width: "100vw",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
       }}
     >
       <h1 className="title">CHOOSE MODULE</h1>
 
-      {/* Module Selection Buttons */}
       <div className="word-length-container">
         {[...Array(15)].map((_, index) => (
           <button 
@@ -61,7 +58,6 @@ const LevelSelection = () => {
 
       <h1 className="title">CHOOSE DIFFICULTY</h1>
 
-      {/* Level Selection Buttons */}
       <div className="difficulty-container">
         {["VERY EASY", "EASY", "NORMAL", "HARD"].map((difficulty, index) => (
           <button 
@@ -74,7 +70,6 @@ const LevelSelection = () => {
         ))}
       </div>
 
-      {/* Back Button */}
       <button className="back-button" onClick={() => navigate("/who-is-playing")}>
         Back
       </button>
