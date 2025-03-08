@@ -13,24 +13,51 @@ app.use(express.json());
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
 })
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// Test Route
-app.get("/", (req, res) => {
-  res.send("🚀 Server is running on Render!");
+// Schema and Model
+const selectionSchema = new mongoose.Schema({
+  Module: Number,
+  Level: Number,
+  Initialize: Number,
 });
 
-// API Routes
-const wordRoutes = require("./routes/words");
-app.use("/api/words", wordRoutes);
+const Selection = mongoose.model("Selection", selectionSchema, "Module");
 
-const playerRoutes = require("./routes/players");
-app.use("/api/players", playerRoutes);
+// API Route to Update Module
+app.put("/api/updateModule", async (req, res) => {
+  try {
+    const { moduleNumber } = req.body;
+    const result = await Selection.findOneAndUpdate({}, { Module: moduleNumber }, { new: true });
 
-// ✅ Add `app.listen()` (Required for Render)
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+    if (result) {
+      res.json({ message: "✅ Module updated successfully!", data: result });
+    } else {
+      res.status(404).json({ message: "❌ No document found to update." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "❌ Error updating Module.", error: err });
+  }
 });
+
+// API Route to Update Level
+app.put("/api/updateLevel", async (req, res) => {
+  try {
+    const { levelNumber } = req.body;
+    const result = await Selection.findOneAndUpdate({}, { Level: levelNumber }, { new: true });
+
+    if (result) {
+      res.json({ message: "✅ Level updated successfully!", data: result });
+    } else {
+      res.status(404).json({ message: "❌ No document found to update." });
+    }
+  } catch (err) {
+    res.status(500).json({ message: "❌ Error updating Level.", error: err });
+  }
+});
+
+// Start Server
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
