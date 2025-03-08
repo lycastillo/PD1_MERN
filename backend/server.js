@@ -20,7 +20,7 @@ mongoose.connect(process.env.MONGO_URI, {
 
 // Root route
 app.get("/", (req, res) => {
-  res.send("Server is running!");
+  res.send("🚀 Server is running on Render!");
 });
 
 // Word routes
@@ -31,5 +31,7 @@ app.use("/api/words", wordRoutes);
 const playerRoutes = require("./routes/players");
 app.use("/api/players", playerRoutes);
 
-// ✅ Export the Express app for Vercel
-module.exports = app;
+// ✅ Add app.listen() (Required for Render)
+app.listen(PORT, () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
