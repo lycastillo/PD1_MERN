@@ -1,13 +1,35 @@
 import React from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./LevelSelection.css";
+
+const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const LevelSelection = () => {
   const navigate = useNavigate();
-  const { playerId } = useParams();
+
+  // Function to update Module in MongoDB
+  const updateModule = async (moduleNumber) => {
+    try {
+      const res = await axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber });
+      console.log(res.data.message);
+    } catch (err) {
+      console.error("❌ Error updating module:", err);
+    }
+  };
+
+  // Function to update Level in MongoDB
+  const updateLevel = async (levelNumber) => {
+    try {
+      const res = await axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber });
+      console.log(res.data.message);
+    } catch (err) {
+      console.error("❌ Error updating level:", err);
+    }
+  };
 
   return (
-    <div
+    <div 
       className="level-selection-screen"
       style={{
         backgroundImage: `url(${process.env.PUBLIC_URL + "/game-UI.png"})`,
@@ -16,26 +38,46 @@ const LevelSelection = () => {
         backgroundRepeat: "no-repeat",
         height: "100vh",
         width: "100vw",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
-      <h1 className="title">CHOOSE WORD LENGTH</h1>
+      <h1 className="title">CHOOSE MODULE</h1>
 
+      {/* Module Selection Buttons */}
       <div className="word-length-container">
-        <button className="word-button">3 LETTERS</button>
-        <button className="word-button">4 LETTERS</button>
-        <button className="word-button">5 LETTERS</button>
+        {[...Array(15)].map((_, index) => (
+          <button 
+            key={index} 
+            className="word-button" 
+            onClick={() => updateModule(index + 1)}
+          >
+            MODULE {index + 1}
+          </button>
+        ))}
       </div>
 
       <h1 className="title">CHOOSE DIFFICULTY</h1>
 
+      {/* Level Selection Buttons */}
       <div className="difficulty-container">
-        <button className="difficulty-button very-easy">VERY EASY</button>
-        <button className="difficulty-button easy">EASY</button>
-        <button className="difficulty-button normal">NORMAL</button>
-        <button className="difficulty-button hard">HARD</button>
+        {["VERY EASY", "EASY", "NORMAL", "HARD"].map((difficulty, index) => (
+          <button 
+            key={index} 
+            className="difficulty-button"
+            onClick={() => updateLevel(index + 1)}
+          >
+            {difficulty}
+          </button>
+        ))}
       </div>
 
-      <button className="back-button" onClick={() => navigate("/who-is-playing")}>Back</button>
+      {/* Back Button */}
+      <button className="back-button" onClick={() => navigate("/who-is-playing")}>
+        Back
+      </button>
     </div>
   );
 };
