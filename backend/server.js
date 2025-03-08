@@ -10,7 +10,7 @@ const PORT = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+// Connect to MongoDB Atlas
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -18,9 +18,9 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch(err => console.error("❌ MongoDB connection error:", err));
 
-// Load Player Routes
+// Load Routes
 const playerRoutes = require("./routes/players"); 
-app.use("/api/players", playerRoutes); // ✅ Ensuring API endpoint is properly set
+app.use("/api/players", playerRoutes); // ✅ Ensure this is properly set
 
 // Root route for testing
 app.get("/", (req, res) => {

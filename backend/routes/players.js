@@ -17,10 +17,10 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ✅ POST: Add a new player
+// ✅ POST: Add a new player (with error handling)
 router.post("/", async (req, res) => {
     try {
-        if (!req.body.name) {
+        if (!req.body.name || req.body.name.trim() === "") {
             return res.status(400).json({ message: "Player name is required" });
         }
 

@@ -25,22 +25,31 @@ const WhoIsPlaying = () => {
 
   // Add a new player
   const handleEnter = () => {
+    console.log("✅ Enter button clicked"); // Debugging log
+
     if (!newPlayerName.trim()) {
       setErrorMessage("Name cannot be empty.");
       return;
     }
 
+    console.log("🔄 Sending API request to add player...");
+
     axios
       .post(`${API_BASE_URL}/players`, { name: newPlayerName })
       .then((res) => {
-        setPlayers([...players, res.data]); // Add new player to list
+        console.log("✅ Player added successfully:", res.data);
+        setPlayers([...players, res.data]); // Add player to list
         setNewPlayerName(""); 
         setShowDialog(false); 
         setErrorMessage("");
       })
       .catch((err) => {
         console.error("❌ Error adding player:", err);
-        setErrorMessage("Something went wrong.");
+        if (err.response && err.response.data.message) {
+          setErrorMessage(err.response.data.message);
+        } else {
+          setErrorMessage("Something went wrong.");
+        }
       });
   };
 
@@ -82,9 +91,10 @@ const WhoIsPlaying = () => {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               placeholder="Enter name"
+              onKeyPress={(e) => e.key === "Enter" && handleEnter()} // Allow Enter key to submit
             />
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <button onClick={handleEnter}>Enter</button>
+            <button onClick={handleEnter}>Enter</button> {/* Fix onClick */}
           </div>
         </div>
       )}
