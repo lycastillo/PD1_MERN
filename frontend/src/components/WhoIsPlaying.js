@@ -12,7 +12,7 @@ const WhoIsPlaying = () => {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Fetch players when the page loads
+  // ✅ Fetch players when the page loads
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/players`)
@@ -20,12 +20,14 @@ const WhoIsPlaying = () => {
         console.log("✅ Players fetched:", res.data);
         setPlayers(res.data);
       })
-      .catch((err) => console.error("❌ Error fetching players:", err));
+      .catch((err) => {
+        console.error("❌ Error fetching players:", err);
+      });
   }, []);
 
-  // Add a new player
+  // ✅ Add a new player
   const handleEnter = () => {
-    console.log("✅ Enter button clicked"); // Debugging log
+    console.log("✅ Enter button clicked");
 
     if (!newPlayerName.trim()) {
       setErrorMessage("Name cannot be empty.");
@@ -91,10 +93,10 @@ const WhoIsPlaying = () => {
               value={newPlayerName}
               onChange={(e) => setNewPlayerName(e.target.value)}
               placeholder="Enter name"
-              onKeyPress={(e) => e.key === "Enter" && handleEnter()} // Allow Enter key to submit
+              onKeyPress={(e) => e.key === "Enter" && handleEnter()}
             />
             {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <button onClick={handleEnter}>Enter</button> {/* Fix onClick */}
+            <button onClick={handleEnter}>Enter</button> 
           </div>
         </div>
       )}

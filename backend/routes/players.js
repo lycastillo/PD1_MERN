@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-// Define MongoDB Schema
+// Define Player Schema
 const playerSchema = new mongoose.Schema({ name: String });
 const Player = mongoose.model("Player", playerSchema, "players");
 
-// ✅ GET all players
+// ✅ GET All Players
 router.get("/", async (req, res) => {
     try {
         const players = await Player.find();
@@ -17,14 +17,14 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ✅ POST: Add a new player (with error handling)
+// ✅ POST: Add New Player
 router.post("/", async (req, res) => {
     try {
         if (!req.body.name || req.body.name.trim() === "") {
             return res.status(400).json({ message: "Player name is required" });
         }
 
-        // Prevent duplicate names
+        // Prevent Duplicate Names
         const existingPlayer = await Player.findOne({ name: req.body.name });
         if (existingPlayer) {
             return res.status(400).json({ message: "This name already exists!" });
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
     }
 });
 
-// ✅ DELETE: Remove a player
+// ✅ DELETE Player
 router.delete("/:id", async (req, res) => {
     try {
         const deletedPlayer = await Player.findByIdAndDelete(req.params.id);
