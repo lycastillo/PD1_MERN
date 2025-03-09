@@ -12,25 +12,25 @@ const WhoIsPlaying = () => {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  // ✅ Fetch existing players from the backend
+  //Fetch players name from DB
   useEffect(() => {
     axios
       .get(`${API_BASE_URL}/players`)
       .then((res) => {
-        setPlayers(res.data); // Populate player list
+        setPlayers(res.data); 
       })
       .catch((err) => {
         console.error("❌ Error fetching players:", err);
       });
   }, []);
 
-  // ✅ Function to select a player and update in DB
+  //Function for onClick player name reflection in ATLAS
   const selectPlayer = (playerId, playerName) => {
-    // Update the selected player in Level_Select DB
+    //Update player name in ATLAS
     axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
       .then((res) => {
         console.log(`✅ Player Updated to: ${playerName}`);
-        // Redirect to LevelSelection, passing playerId
+        //Upon clicking player name, redirect to Level/Module select page
         navigate(`/select-level/${playerId}`);
       })
       .catch((err) => {
@@ -38,7 +38,7 @@ const WhoIsPlaying = () => {
       });
   };
 
-  // ✅ Function to add a new player
+  //Add new player
   const handleEnter = () => {
     if (!newPlayerName.trim()) {
       setErrorMessage("Name cannot be empty.");
@@ -48,7 +48,7 @@ const WhoIsPlaying = () => {
     axios
       .post(`${API_BASE_URL}/players`, { name: newPlayerName })
       .then((res) => {
-        setPlayers([...players, res.data]); // Add new player to the list
+        setPlayers([...players, res.data]); //Add the new player in list
         setNewPlayerName(""); 
         setShowDialog(false); 
         setErrorMessage("");
@@ -67,14 +67,14 @@ const WhoIsPlaying = () => {
     <div className="who-playing-screen">
       <h1 className="title">WHO'S PLAYING?</h1>
 
-      {/* ✅ Players List */}
+      {/*Players List */}
       <div className="players-container">
         {players.length > 0 ? (
           players.map((player) => (
             <button
               key={player._id}
               className="player-box"
-              onClick={() => selectPlayer(player._id, player.name)} // Select player and redirect
+              onClick={() => selectPlayer(player._id, player.name)} //Pick player and redirect 
             >
               <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
               <div className="player-name">{player.name}</div>
@@ -85,13 +85,13 @@ const WhoIsPlaying = () => {
         )}
       </div>
 
-      {/* ✅ Add Player Button */}
+      {/*Add Player*/}
       <button className="add-player-box" onClick={() => setShowDialog(true)}>
         <div className="add-icon">+</div>
         <p>Add Player</p>
       </button>
 
-      {/* ✅ Add Player Dialog */}
+      {/*Add Player Dialog Pop-up*/}
       {showDialog && (
         <div className="dialog-overlay">
           <div className="dialog-box">

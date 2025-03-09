@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-import WelcomeScreen from "./components/WelcomeScreen";
-import ModuleSelection from "./components/ModuleSelection";
-import WordFlash from "./components/WordFlash";
-import SpellingPage from "./components/SpellingPage";
+import WelcomeScreen from "./components/WelcomeScreen"; //WelcomeScreen.js
+import ModuleSelection from "./components/ModuleSelection"; //ModuleSelection.js
+import WordFlash from "./components/WordFlash"; //WordFlash.js
+import SpellingPage from "./components/SpellingPage"; //SpellingPage.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import WhoIsPlaying from "./components/WhoIsPlaying";
-import ProgressTracker from "./components/ProgressTracker";
-import HowToPlay from "./components/HowToPlay"; 
-import LevelSelection from "./components/LevelSelection"; 
+import WhoIsPlaying from "./components/WhoIsPlaying"; //WhoIsPlaying.js
+import ProgressTracker from "./components/ProgressTracker"; //ProgressTracker.js
+import HowToPlay from "./components/HowToPlay"; //HowToPlay.js
+import LevelSelection from "./components/LevelSelection"; //LevelSelection.js
 import './App.css';
 
 function App() {
@@ -38,8 +38,8 @@ function App() {
     setSelectedWord(wordDetails);
   };
 
-  return (
-    <Router>
+  return ( //Button redirection
+    <Router> 
       <Routes>
       <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
