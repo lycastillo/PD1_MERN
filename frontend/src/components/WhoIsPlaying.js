@@ -27,6 +27,18 @@ const WhoIsPlaying = () => {
       });
   }, []);
 
+  // ✅ Function to Update Selected Player in Atlas
+  const handleSelectPlayer = (playerName) => {
+    axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
+      .then((res) => {
+        console.log(res.data.message);
+        navigate(`/select-level/${playerName}`); // Redirect to Level Selection
+      })
+      .catch((err) => {
+        console.error("❌ Error updating player:", err);
+      });
+  };
+
   return (
     <div className="who-playing-screen">
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
@@ -42,7 +54,7 @@ const WhoIsPlaying = () => {
           <button 
             key={player._id} 
             className="who-playing-box"
-            onClick={() => navigate(`/select-level/${player.name}`)}
+            onClick={() => handleSelectPlayer(player.name)}
           >
             <div className="who-playing-initial">
               {player.name.charAt(0).toUpperCase()}
