@@ -1,12 +1,12 @@
 const express = require('express');
-const Word = require('../models/Word'); // Adjust the path based on your project structure
+const Word = require('../models/Word'); // Adjust the path
 const router = express.Router();
 
 // Fetch all words
 router.get('/all', async (req, res) => {
   try {
-    const words = await Word.find(); // Fetch all words from the database
-    console.log('Fetched all words:', words); // Log the fetched words
+    const words = await Word.find(); 
+    console.log('Fetched all words:', words); 
     res.json(words);
   } catch (error) {
     console.error('Error fetching all words:', error);
@@ -14,7 +14,7 @@ router.get('/all', async (req, res) => {
   }
 });
 
-// Fetch words by module
+
 router.get('/:module', async (req, res) => {
   console.log(`Request received for module: ${req.params.module}`); // Log the module being requested
   try {

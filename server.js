@@ -21,6 +21,9 @@ const db = mongoose.connection;
 const playerRoutes = require("./routes/players");
 app.use("/api/players", playerRoutes);
 
+const progressRoutes = require("./routes/progress");
+app.use("/api/progress", progressRoutes);
+
 app.put("/api/updatePlayer", async (req, res) => {
     try {
         const { playerName } = req.body;
