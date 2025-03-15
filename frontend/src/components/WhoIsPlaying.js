@@ -8,34 +8,36 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch Players from the Database on Page Load
+  // ✅ Fetch Players from Database
   useEffect(() => {
     axios.get(`${API_BASE_URL}/players`)
-      .then((res) => setPlayers(res.data))
-      .catch((err) => console.error("❌ Error fetching players:", err));
+      .then((res) => {
+        setPlayers(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ Error fetching players:", err);
+        setPlayers([]); // Ensure it doesn’t crash
+        setLoading(false);
+      });
   }, []);
 
-  // ✅ Handle Player Selection, Save Progress, and Navigate
+  // ✅ Handle Player Selection & Update DB
   const handleSelectPlayer = async (playerName) => {
-    if (loading) return; // Prevent multiple clicks
-    setLoading(true);
-
     try {
       console.log(`🔵 Selecting ${playerName}...`);
-      
-      // ✅ Step 1: Update the player in DB
+
+      // ✅ Update Player in MongoDB
       await axios.put(`${API_BASE_URL}/updatePlayer`, { playerName });
 
       console.log(`✅ Player switched to ${playerName}`);
 
-      // ✅ Step 2: Navigate to Level Selection
+      // ✅ Navigate to Level Selection
       navigate(`/select-level/${playerName}`);
     } catch (err) {
       console.error("❌ Error selecting player:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -43,7 +45,9 @@ const WhoIsPlaying = () => {
     <div className="who-playing-screen">
       <h1 className="title">WHO'S PLAYING?</h1>
       <div className="who-playing-container">
-        {players.length > 0 ? (
+        {loading ? (
+          <p className="loading-text">Loading players...</p>
+        ) : players.length > 0 ? (
           players.map((player) => (
             <button 
               key={player._id} 

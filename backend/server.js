@@ -20,6 +20,21 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const db = mongoose.connection;
 
+// ✅ Fetch Players from Database (Fixes "No Players Found" issue)
+app.get("/api/players", async (req, res) => {
+    try {
+        const players = await db.collection("players").find({}).toArray();
+        if (players.length > 0) {
+            res.json(players);
+        } else {
+            res.status(404).json({ message: "❌ No players found in database." });
+        }
+    } catch (error) {
+        console.error("❌ Error fetching players:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 // ✅ Select Player, Save Progress, and Update Level_Select
 app.put("/api/updatePlayer", async (req, res) => {
     try {
@@ -81,6 +96,47 @@ app.put("/api/updateLevel", async (req, res) => {
         res.json({ message: `✅ Level updated to ${levelNumber}` });
     } catch (error) {
         console.error("❌ Error updating Level:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Save Progress (before switching players or ending a session)
+app.post("/api/saveProgress", async (req, res) => {
+    try {
+        const currentGameData = await db.collection("Level_Select").findOne({});
+        if (currentGameData?.Player) {
+            await db.collection("Progress").insertOne({
+                Player: currentGameData.Player,
+                Module: currentGameData.Module || 0,
+                Level: currentGameData.Level || 0,
+                Date: new Date().toLocaleDateString(),
+                Time: new Date().toLocaleTimeString(),
+                Score: 0
+            });
+
+            res.json({ message: `✅ Progress saved for ${currentGameData.Player}` });
+        } else {
+            res.status(400).json({ message: "❌ No active player found to save progress." });
+        }
+    } catch (error) {
+        console.error("❌ Error saving progress:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Fetch Progress Data for a Specific Player
+app.get("/api/progress/:playerName", async (req, res) => {
+    try {
+        const { playerName } = req.params;
+        const progressData = await db.collection("Progress").find({ Player: playerName }).toArray();
+        
+        if (progressData.length > 0) {
+            res.json(progressData);
+        } else {
+            res.status(404).json({ message: "❌ No progress data found for this player." });
+        }
+    } catch (error) {
+        console.error("❌ Error fetching progress data:", error);
         res.status(500).json({ message: "Server error", error });
     }
 });
