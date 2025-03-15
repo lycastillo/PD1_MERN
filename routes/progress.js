@@ -2,36 +2,36 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-// ✅ Define Level_Select Schema
-const levelSelectSchema = new mongoose.Schema({
+// ✅ Define Progress Schema
+const progressSchema = new mongoose.Schema({
     Player: String,
     Module: Number,
     Level: Number,
     Initialize: Number,
-    timestamp: { type: Date, default: Date.now } // ✅ Adds timestamp for sorting
+    timestamp: { type: Date, default: Date.now } // ✅ Save time played
 });
-const LevelSelect = mongoose.model("LevelSelect", levelSelectSchema, "Level_Select");
+const Progress = mongoose.model("Progress", progressSchema, "Progress");
 
-// ✅ GET ALL Instances of Player from Level_Select
+// ✅ GET ALL Instances of Player Progress
 router.get("/:playerName", async (req, res) => {
     try {
         const playerName = req.params.playerName.trim();
-        console.log(`🔍 Searching game history for: '${playerName}'`);
+        console.log(`🔍 Searching progress for: '${playerName}'`);
 
-        // ✅ Find all instances where this player played
-        const playerHistory = await LevelSelect.find({ Player: { $regex: `^${playerName}$`, $options: "i" } })
+        // ✅ Find all instances where this player has progress
+        const playerProgress = await Progress.find({ Player: { $regex: `^${playerName}$`, $options: "i" } })
             .sort({ timestamp: -1 }); // ✅ Sort by latest game first
 
-        if (!playerHistory.length) {
-            console.log(`❌ No game history found for ${playerName}`);
-            return res.status(404).json({ message: `No game history found for ${playerName}` });
+        if (!playerProgress.length) {
+            console.log(`❌ No progress found for ${playerName}`);
+            return res.status(404).json({ message: `No progress found for ${playerName}` });
         }
 
-        console.log(`✅ Game history found for ${playerName}:`, playerHistory);
-        res.json(playerHistory);
+        console.log(`✅ Progress found for ${playerName}:`, playerProgress);
+        res.json(playerProgress);
     } catch (err) {
-        console.error("❌ Error fetching player history:", err);
-        res.status(500).json({ message: "Error retrieving game history", error: err.message });
+        console.error("❌ Error fetching player progress:", err);
+        res.status(500).json({ message: "Error retrieving progress", error: err.message });
     }
 });
 

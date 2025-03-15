@@ -9,7 +9,7 @@ const ProgressTracker = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [playerHistory, setPlayerHistory] = useState(null);
+  const [playerHistory, setPlayerHistory] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,21 +26,25 @@ const ProgressTracker = () => {
       });
   }, []);
 
-  // ✅ Fetch All Instances of Selected Player
-  const fetchPlayerHistory = (playerName) => {
+  // ✅ Fetch Player Progress & Store Data
+  const fetchPlayerProgress = (playerName) => {
     setLoading(true);
     setSelectedPlayer(playerName);
-    setPlayerHistory(null);
 
     axios.get(`${API_BASE_URL}/progress/${playerName}`)
       .then((res) => {
-        console.log(`✅ Game history for ${playerName}:`, res.data);
-        setPlayerHistory(res.data);
+        console.log(`✅ Progress for ${playerName}:`, res.data);
+
+        // ✅ Store progress data for each player separately
+        setPlayerHistory((prevHistory) => ({
+          ...prevHistory,
+          [playerName]: res.data
+        }));
+
         setLoading(false);
       })
       .catch((err) => {
-        console.error("❌ Error fetching game history:", err);
-        setPlayerHistory(null);
+        console.error("❌ Error fetching progress:", err);
         setLoading(false);
       });
   };
@@ -59,7 +63,7 @@ const ProgressTracker = () => {
           <button 
             key={player._id} 
             className={`progress-tracker-box ${selectedPlayer === player.name ? "selected" : ""}`}
-            onClick={() => fetchPlayerHistory(player.name)}
+            onClick={() => fetchPlayerProgress(player.name)}
           >
             <div className="progress-tracker-initial">
               {player.name.charAt(0).toUpperCase()}
@@ -69,15 +73,15 @@ const ProgressTracker = () => {
         ))}
       </div>
 
-      {/* ✅ Show Player Game History */}
-      {selectedPlayer && (
-        <div className="progress-display">
-          <h2>Game History for {selectedPlayer}</h2>
+      {/* ✅ Show Player Progress */}
+      {Object.keys(playerHistory).map((playerName) => (
+        <div className="progress-display" key={playerName}>
+          <h2>Game History for {playerName}</h2>
           {loading ? (
             <p>Loading...</p> 
-          ) : playerHistory && playerHistory.length > 0 ? (
+          ) : playerHistory[playerName] && playerHistory[playerName].length > 0 ? (
             <ul>
-              {playerHistory.map((game, index) => (
+              {playerHistory[playerName].map((game, index) => (
                 <li key={index}>
                   <strong>Module:</strong> {game.Module},  
                   <strong> Level:</strong> {game.Level},  
@@ -86,10 +90,10 @@ const ProgressTracker = () => {
               ))}
             </ul>
           ) : (
-            <p>No game history found.</p>
+            <p>No progress found.</p>
           )}
         </div>
-      )}
+      ))}
     </div>
   );
 };
