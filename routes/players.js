@@ -2,25 +2,43 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-// ✅ Define Player Schema
-const playerSchema = new mongoose.Schema({
-    name: String
-});
-const Player = mongoose.model("Player", playerSchema, "players");
+const db = mongoose.connection;
 
-// ✅ GET All Players
+// ✅ Get All Players
 router.get("/", async (req, res) => {
     try {
-        const players = await Player.find({});
-        if (!players.length) {
-            return res.status(404).json({ message: "❌ No players found." });
-        }
-
-        console.log("✅ Players fetched successfully:", players);
+        const players = await db.collection("players").find().toArray();
         res.json(players);
-    } catch (err) {
-        console.error("❌ Error fetching players:", err);
-        res.status(500).json({ message: "Server error", error: err.message });
+    } catch (error) {
+        console.error("❌ Error fetching players:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Add New Player
+router.post("/", async (req, res) => {
+    try {
+        const { name } = req.body;
+        const newPlayer = { name };
+
+        await db.collection("players").insertOne(newPlayer);
+        res.json(newPlayer);
+    } catch (error) {
+        console.error("❌ Error adding player:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Delete Player
+router.delete("/:name", async (req, res) => {
+    try {
+        const playerName = req.params.name;
+
+        await db.collection("players").deleteOne({ name: playerName });
+        res.json({ message: `✅ Player ${playerName} deleted successfully.` });
+    } catch (error) {
+        console.error("❌ Error deleting player:", error);
+        res.status(500).json({ message: "Server error", error });
     }
 });
 
