@@ -16,12 +16,15 @@ const WhoIsPlaying = () => {
       .catch((err) => console.error("❌ Error fetching players:", err));
   }, []);
 
-  // ✅ Save Progress Before Switching Players
+  // ✅ Save Progress Before Switching Players, THEN Navigate
   const handleSelectPlayer = (playerName) => {
     axios.post(`${API_BASE_URL}/saveProgress`)
       .then(() => {
         axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
-          .then(() => navigate(`/select-level/${playerName}`))
+          .then(() => {
+            console.log(`✅ Player switched to ${playerName}`);
+            navigate(`/select-level/${playerName}`); // ✅ Navigate only AFTER saving progress
+          })
           .catch((err) => console.error("❌ Error updating player:", err));
       })
       .catch((err) => console.error("❌ Error saving progress:", err));
