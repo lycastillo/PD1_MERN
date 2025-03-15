@@ -68,15 +68,27 @@ const WhoIsPlaying = () => {
 
   // ✅ Function to Select a Player and Update Database
   const handleSelectPlayer = (playerName) => {
-    axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
+    // 1️⃣ First, Save Progress for the Current Player
+    axios.post(`${API_BASE_URL}/saveProgress`)
       .then((res) => {
         console.log(res.data.message);
-        navigate(`/select-level/${playerName}`); // Redirect to Level Selection
+  
+        // 2️⃣ Then, Switch to the New Player
+        axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
+          .then((res) => {
+            console.log(res.data.message);
+            navigate(`/select-level/${playerName}`); // Redirect to Level Selection
+          })
+          .catch((err) => {
+            console.error("❌ Error updating player:", err);
+          });
+  
       })
       .catch((err) => {
-        console.error("❌ Error updating player:", err);
+        console.error("❌ Error saving progress:", err);
       });
   };
+  
 
   return (
     <div className={`who-playing-screen ${showDialog || showDeleteDialog ? "blur-background" : ""}`}>

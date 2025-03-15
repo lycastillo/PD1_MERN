@@ -88,6 +88,7 @@ app.put("/api/updateLevel", async (req, res) => {
 });
 
 // ✅ Save Game Progress to Progress Collection (After Player Finishes Game)
+// ✅ Save Progress Before Switching Players
 app.post("/api/saveProgress", async (req, res) => {
     try {
         // Fetch the current game session data from Level_Select
@@ -97,7 +98,7 @@ app.post("/api/saveProgress", async (req, res) => {
             return res.status(404).json({ message: "❌ No active game session found." });
         }
 
-        // Prepare the data to store in Progress collection
+        // Prepare data to store in Progress collection
         const progressData = {
             Player: gameData.Player,
             Module: gameData.Module,
@@ -116,25 +117,32 @@ app.post("/api/saveProgress", async (req, res) => {
     }
 });
 
-// ✅ Fetch Progress History for Selected Player
-app.get("/api/progress/:playerName", async (req, res) => {
+// ✅ Select New Player and Update Level_Select
+app.put("/api/updatePlayer", async (req, res) => {
     try {
-        const playerName = req.params.playerName;
+        const { playerName } = req.body;
 
-        // Fetch all records where Player matches the clicked player
-        const progressData = await db.collection("Progress").find({ Player: playerName }).toArray();
+        // First, Save the Current Player's Progress
+        await db.collection("Progress").insertOne({
+            Player: playerName,
+            Module: 0, // Reset for new session
+            Level: 0, // Reset for new session
+            timestamp: new Date()
+        });
 
-        if (!progressData.length) {
-            return res.status(404).json({ message: `❌ No progress data found for ${playerName}.` });
+        // Then, Update the Current Player in Level_Select
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Player: playerName, Module: 0, Level: 0 } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Player switched to ${playerName}, progress saved.` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
         }
-
-        console.log(`✅ Progress data found for ${playerName}:`, progressData);
-        res.json(progressData);
     } catch (error) {
-        console.error("❌ Error fetching progress:", error);
+        console.error("❌ Error updating Player:", error);
         res.status(500).json({ message: "Server error", error });
     }
 });
-
-// ✅ Start Server
-app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
