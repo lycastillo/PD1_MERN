@@ -16,34 +16,44 @@ const WhoIsPlaying = () => {
       .catch((err) => console.error("❌ Error fetching players:", err));
   }, []);
 
-  // ✅ Save Progress Before Switching Players, THEN Navigate
-  const handleSelectPlayer = (playerName) => {
-    axios.post(`${API_BASE_URL}/saveProgress`)
-      .then(() => {
-        axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
-          .then(() => {
-            console.log(`✅ Player switched to ${playerName}`);
-            navigate(`/select-level/${playerName}`); // ✅ Navigate only AFTER saving progress
-          })
-          .catch((err) => console.error("❌ Error updating player:", err));
-      })
-      .catch((err) => console.error("❌ Error saving progress:", err));
+  // ✅ Save Progress THEN Update Player THEN Navigate
+  const handleSelectPlayer = async (playerName) => {
+    try {
+      console.log(`🔵 Saving progress before switching to ${playerName}...`);
+      
+      // ✅ Step 1: Save Current Progress First
+      await axios.post(`${API_BASE_URL}/saveProgress`);
+      console.log("✅ Progress saved!");
+
+      // ✅ Step 2: Update Player
+      await axios.put(`${API_BASE_URL}/updatePlayer`, { playerName });
+      console.log(`✅ Player updated to ${playerName}`);
+
+      // ✅ Step 3: Navigate to Level Selection AFTER saving progress
+      navigate(`/select-level/${playerName}`);
+    } catch (err) {
+      console.error("❌ Error handling player selection:", err);
+    }
   };
 
   return (
     <div className="who-playing-screen">
       <h1 className="title">WHO'S PLAYING?</h1>
       <div className="who-playing-container">
-        {players.map((player) => (
-          <button 
-            key={player._id} 
-            className="who-playing-box"
-            onClick={() => handleSelectPlayer(player.name)}
-          >
-            <div className="who-playing-initial">{player.name.charAt(0).toUpperCase()}</div>
-            <div className="who-playing-name">{player.name}</div>
-          </button>
-        ))}
+        {players.length > 0 ? (
+          players.map((player) => (
+            <button 
+              key={player._id} 
+              className="who-playing-box"
+              onClick={() => handleSelectPlayer(player.name)} // ✅ Click works now
+            >
+              <div className="who-playing-initial">{player.name.charAt(0).toUpperCase()}</div>
+              <div className="who-playing-name">{player.name}</div>
+            </button>
+          ))
+        ) : (
+          <p className="no-players">No players found. Add a new player!</p>
+        )}
       </div>
     </div>
   );
