@@ -27,26 +27,26 @@ app.use("/api/players", playerRoutes);
 // ✅ Save Progress Before Switching Players
 app.post("/api/saveProgress", async (req, res) => {
     try {
-        // Fetch the current game session data from Level_Select
+        // Fetch the CURRENT module and level before saving
         const gameData = await db.collection("Level_Select").findOne({});
 
         if (!gameData || !gameData.Player) {
             return res.status(404).json({ message: "❌ No active game session found." });
         }
 
-        // Prepare data to store in Progress collection
+        // ✅ Ensure correct Module & Level values are stored in Progress
         const progressData = {
             Player: gameData.Player,
-            Module: gameData.Module,
-            Level: gameData.Level,
+            Module: gameData.Module, // ✅ Stores the ACTUAL selected Module
+            Level: gameData.Level,   // ✅ Stores the ACTUAL selected Level
             timestamp: new Date()
         };
 
-        // Insert the progress data into wordApp.Progress
+        // ✅ Insert the CORRECT progress data into wordApp.Progress
         await db.collection("Progress").insertOne(progressData);
 
-        console.log(`✅ Progress saved for ${gameData.Player}`);
-        res.json({ message: "✅ Game progress saved successfully!" });
+        console.log(`✅ Progress saved for ${gameData.Player} (Module: ${gameData.Module}, Level: ${gameData.Level})`);
+        res.json({ message: `✅ Game progress saved: Module ${gameData.Module}, Level ${gameData.Level}` });
     } catch (error) {
         console.error("❌ Error saving progress:", error);
         res.status(500).json({ message: "Server error", error });
@@ -58,15 +58,22 @@ app.put("/api/updatePlayer", async (req, res) => {
     try {
         const { playerName } = req.body;
 
-        // First, Save the Current Player's Progress
-        await db.collection("Progress").insertOne({
-            Player: playerName,
-            Module: 0, // Reset for new session
-            Level: 0, // Reset for new session
-            timestamp: new Date()
-        });
+        // ✅ Fetch current module & level before switching players
+        const currentGameData = await db.collection("Level_Select").findOne({});
+        const currentModule = currentGameData?.Module || 0;
+        const currentLevel = currentGameData?.Level || 0;
 
-        // Then, Update the Current Player in Level_Select
+        // ✅ First, Save the Current Player's Progress
+        if (currentGameData?.Player) {
+            await db.collection("Progress").insertOne({
+                Player: currentGameData.Player,
+                Module: currentModule,
+                Level: currentLevel,
+                timestamp: new Date()
+            });
+        }
+
+        // ✅ Then, Update the CURRENT Player in Level_Select
         const result = await db.collection("Level_Select").updateOne(
             {},  
             { $set: { Player: playerName, Module: 0, Level: 0 } }

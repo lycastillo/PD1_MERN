@@ -35,13 +35,6 @@ const ProgressTracker = () => {
           </button>
         ))}
       </div>
-      {selectedPlayer && (
-        <ul>
-          {playerProgress.map((game, index) => (
-            <li key={index}>Module {game.Module}, Level {game.Level}, {new Date(game.timestamp).toLocaleString()}</li>
-          ))}
-        </ul>
-      )}
     </div>
   );
 };

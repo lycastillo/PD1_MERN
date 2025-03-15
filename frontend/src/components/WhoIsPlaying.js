@@ -8,9 +8,6 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
-  const [showDialog, setShowDialog] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
 
   // ✅ Fetch Players from the Database on Page Load
   useEffect(() => {
