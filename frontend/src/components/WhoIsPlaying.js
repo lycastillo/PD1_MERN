@@ -1,112 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./WhoIsPlaying.css";
+import "./WhoIsPlaying.css"; 
 
 const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
-  const [showDialog, setShowDialog] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  //Fetch players name from DB
+  // ✅ Fetch Players on Page Load
   useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/players`)
+    setLoading(true);
+    axios.get(`${API_BASE_URL}/players`)
       .then((res) => {
-        setPlayers(res.data); 
+        console.log("✅ Players fetched successfully:", res.data);
+        setPlayers(res.data);
+        setLoading(false);
       })
       .catch((err) => {
         console.error("❌ Error fetching players:", err);
+        setError("Error loading players.");
+        setLoading(false);
       });
   }, []);
 
-  //Function for onClick player name reflection in ATLAS
-  const selectPlayer = (playerId, playerName) => {
-    //Update player name in ATLAS
-    axios.put(`${API_BASE_URL}/updatePlayer`, { playerName })
-      .then((res) => {
-        console.log(`✅ Player Updated to: ${playerName}`);
-        //Upon clicking player name, redirect to Level/Module select page
-        navigate(`/select-level/${playerId}`);
-      })
-      .catch((err) => {
-        console.error("❌ Error updating player:", err);
-      });
-  };
-
-  //Add new player
-  const handleEnter = () => {
-    if (!newPlayerName.trim()) {
-      setErrorMessage("Name cannot be empty.");
-      return;
-    }
-
-    axios
-      .post(`${API_BASE_URL}/players`, { name: newPlayerName })
-      .then((res) => {
-        setPlayers([...players, res.data]); //Add the new player in list
-        setNewPlayerName(""); 
-        setShowDialog(false); 
-        setErrorMessage("");
-      })
-      .catch((err) => {
-        console.error("❌ Error adding player:", err);
-        if (err.response && err.response.data.message) {
-          setErrorMessage(err.response.data.message);
-        } else {
-          setErrorMessage("Something went wrong.");
-        }
-      });
-  };
-
   return (
     <div className="who-playing-screen">
-      <h1 className="title">WHO'S PLAYING?</h1>
+      <img src="/new2.png" alt="Logo" className="top-left-logo" />
+      <button className="who-playing-back-button" onClick={() => navigate("/")}>Back</button>
+      <h1 className="who-playing-title">WHO'S PLAYING?</h1>
 
-      {/*Players List */}
-      <div className="players-container">
-        {players.length > 0 ? (
-          players.map((player) => (
-            <button
-              key={player._id}
-              className="player-box"
-              onClick={() => selectPlayer(player._id, player.name)} //Pick player and redirect 
-            >
-              <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
-              <div className="player-name">{player.name}</div>
-            </button>
-          ))
-        ) : (
-          <p>No players found. Add one below!</p>
-        )}
+      {loading ? <p>Loading...</p> : null}
+      {error && <p className="error-message">{error}</p>}
+
+      {/* ✅ Players List */}
+      <div className="who-playing-container">
+        {players.length > 0 ? players.map((player) => (
+          <button 
+            key={player._id} 
+            className="who-playing-box"
+            onClick={() => navigate(`/select-level/${player.name}`)}
+          >
+            <div className="who-playing-initial">
+              {player.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="who-playing-name">{player.name}</div>
+          </button>
+        )) : <p>No players found.</p>}
       </div>
-
-      {/*Add Player*/}
-      <button className="add-player-box" onClick={() => setShowDialog(true)}>
-        <div className="add-icon">+</div>
-        <p>Add Player</p>
-      </button>
-
-      {/*Add Player Dialog Pop-up*/}
-      {showDialog && (
-        <div className="dialog-overlay">
-          <div className="dialog-box">
-            <h2>Enter your name</h2>
-            <input
-              type="text"
-              value={newPlayerName}
-              onChange={(e) => setNewPlayerName(e.target.value)}
-              placeholder="Enter name"
-            />
-            {errorMessage && <p style={{ color: "red" }}>{errorMessage}</p>}
-            <button onClick={handleEnter}>Enter</button> 
-          </div>
-        </div>
-      )}
     </div>
   );
 };
