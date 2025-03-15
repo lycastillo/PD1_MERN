@@ -9,48 +9,29 @@ const LevelSelection = () => {
   const navigate = useNavigate();
   const { playerId } = useParams();
 
-  // ✅ Function to Update Module in MongoDB
-  const updateModule = (moduleNumber) => {
+  // ✅ Select Module and Update DB
+  const handleSelectModule = (moduleNumber) => {
     axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber })
-      .then((res) => {
-        console.log(res.data.message);
-      })
-      .catch((err) => {
-        console.error("❌ Error updating module:", err);
-      });
+      .then(() => console.log(`✅ Module ${moduleNumber} selected`))
+      .catch((err) => console.error("❌ Error updating module:", err));
   };
 
-  // ✅ Function to Update Level in MongoDB
-  const updateLevel = (levelNumber) => {
+  // ✅ Select Level and Update DB
+  const handleSelectLevel = (levelNumber) => {
     axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber })
-      .then((res) => {
-        console.log(res.data.message);
-      })
-      .catch((err) => {
-        console.error("❌ Error updating level:", err);
-      });
+      .then(() => console.log(`✅ Level ${levelNumber} selected`))
+      .catch((err) => console.error("❌ Error updating level:", err));
   };
 
   return (
-    <div 
-      className="level-selection-screen"
-      style={{
-        backgroundImage: `url(${process.env.PUBLIC_URL + "/game-UI.png"})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        height: "100vh",
-        width: "100vw",
-      }}
-    >
+    <div className="level-selection-screen">
       <h1 className="title">CHOOSE MODULE</h1>
-
       <div className="word-length-container">
         {[...Array(15)].map((_, index) => (
           <button 
             key={index} 
             className="word-button" 
-            onClick={() => updateModule(index + 1)}
+            onClick={() => handleSelectModule(index + 1)}
           >
             MODULE {index + 1}
           </button>
@@ -58,13 +39,12 @@ const LevelSelection = () => {
       </div>
 
       <h1 className="title">CHOOSE DIFFICULTY</h1>
-
       <div className="difficulty-container">
         {["VERY EASY", "EASY", "NORMAL", "HARD"].map((difficulty, index) => (
           <button 
             key={index} 
             className="difficulty-button"
-            onClick={() => updateLevel(index + 1)}
+            onClick={() => handleSelectLevel(index + 1)}
           >
             {difficulty}
           </button>

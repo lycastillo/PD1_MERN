@@ -24,88 +24,75 @@ const db = mongoose.connection;
 const playerRoutes = require("./routes/players"); 
 app.use("/api/players", playerRoutes); 
 
-// ✅ Save Progress Before Switching Players
+// ✅ Update Selected Module
+app.put("/api/updateModule", async (req, res) => {
+    try {
+        const { moduleNumber } = req.body;
+
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Module: moduleNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Module updated to ${moduleNumber}` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Module:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Update Selected Level
+app.put("/api/updateLevel", async (req, res) => {
+    try {
+        const { levelNumber } = req.body;
+
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Level: levelNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Level updated to ${levelNumber}` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Level:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Save Progress AFTER Ensuring Module & Level Are Updated
 app.post("/api/saveProgress", async (req, res) => {
     try {
-        // Fetch the CURRENT module and level before saving
+        // Fetch the latest game data from Level_Select
         const gameData = await db.collection("Level_Select").findOne({});
 
         if (!gameData || !gameData.Player) {
             return res.status(404).json({ message: "❌ No active game session found." });
         }
 
-        // ✅ Ensure correct Module & Level values are stored in Progress
+        // ✅ Save the UPDATED module and level
         const progressData = {
             Player: gameData.Player,
-            Module: gameData.Module, // ✅ Stores the ACTUAL selected Module
-            Level: gameData.Level,   // ✅ Stores the ACTUAL selected Level
-            timestamp: new Date()
+            Module: gameData.Module, 
+            Level: gameData.Level,
+            Date: new Date().toLocaleDateString(),
+            Time: new Date().toLocaleTimeString(),
+            Score: 0  // Set default score, can be updated later
         };
 
-        // ✅ Insert the CORRECT progress data into wordApp.Progress
+        // ✅ Insert the correct progress into wordApp.Progress
         await db.collection("Progress").insertOne(progressData);
 
-        console.log(`✅ Progress saved for ${gameData.Player} (Module: ${gameData.Module}, Level: ${gameData.Level})`);
-        res.json({ message: `✅ Game progress saved: Module ${gameData.Module}, Level ${gameData.Level}` });
+        console.log(`✅ Progress saved: ${gameData.Player} (Module: ${gameData.Module}, Level: ${gameData.Level})`);
+        res.json({ message: `✅ Game progress saved successfully!` });
     } catch (error) {
         console.error("❌ Error saving progress:", error);
-        res.status(500).json({ message: "Server error", error });
-    }
-});
-
-// ✅ Select New Player and Update Level_Select
-app.put("/api/updatePlayer", async (req, res) => {
-    try {
-        const { playerName } = req.body;
-
-        // ✅ Fetch current module & level before switching players
-        const currentGameData = await db.collection("Level_Select").findOne({});
-        const currentModule = currentGameData?.Module || 0;
-        const currentLevel = currentGameData?.Level || 0;
-
-        // ✅ First, Save the Current Player's Progress
-        if (currentGameData?.Player) {
-            await db.collection("Progress").insertOne({
-                Player: currentGameData.Player,
-                Module: currentModule,
-                Level: currentLevel,
-                timestamp: new Date()
-            });
-        }
-
-        // ✅ Then, Update the CURRENT Player in Level_Select
-        const result = await db.collection("Level_Select").updateOne(
-            {},  
-            { $set: { Player: playerName, Module: 0, Level: 0 } }
-        );
-
-        if (result.matchedCount > 0) {
-            res.json({ message: `✅ Player switched to ${playerName}, progress saved.` });
-        } else {
-            res.status(404).json({ message: "❌ No document found to update." });
-        }
-    } catch (error) {
-        console.error("❌ Error updating Player:", error);
-        res.status(500).json({ message: "Server error", error });
-    }
-});
-
-// ✅ Fetch Progress History for Selected Player
-app.get("/api/progress/:playerName", async (req, res) => {
-    try {
-        const playerName = req.params.playerName;
-
-        // Fetch all records where Player matches the clicked player
-        const progressData = await db.collection("Progress").find({ Player: playerName }).toArray();
-
-        if (!progressData.length) {
-            return res.status(404).json({ message: `❌ No progress data found for ${playerName}.` });
-        }
-
-        console.log(`✅ Progress data found for ${playerName}:`, progressData);
-        res.json(progressData);
-    } catch (error) {
-        console.error("❌ Error fetching progress:", error);
         res.status(500).json({ message: "Server error", error });
     }
 });

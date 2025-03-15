@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./ProgressTracker.css"; 
 
 const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const ProgressTracker = () => {
-  const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
   const [playerProgress, setPlayerProgress] = useState([]);
@@ -21,7 +19,7 @@ const ProgressTracker = () => {
     setSelectedPlayer(playerName);
     axios.get(`${API_BASE_URL}/progress/${playerName}`)
       .then((res) => setPlayerProgress(res.data))
-      .catch((err) => setPlayerProgress([]));
+      .catch(() => setPlayerProgress([]));
   };
 
   return (
@@ -35,6 +33,13 @@ const ProgressTracker = () => {
           </button>
         ))}
       </div>
+      {selectedPlayer && (
+        <ul>
+          {playerProgress.map((game, index) => (
+            <li key={index}>Module {game.Module}, Level {game.Level}, {game.Date} - {game.Time}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
