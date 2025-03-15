@@ -9,7 +9,7 @@ const ProgressTracker = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [playerHistory, setPlayerHistory] = useState({});
+  const [playerProgress, setPlayerProgress] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,7 +26,7 @@ const ProgressTracker = () => {
       });
   }, []);
 
-  // ✅ Fetch Player Progress & Store Data
+  // ✅ Fetch Player Progress
   const fetchPlayerProgress = (playerName) => {
     setLoading(true);
     setSelectedPlayer(playerName);
@@ -34,13 +34,7 @@ const ProgressTracker = () => {
     axios.get(`${API_BASE_URL}/progress/${playerName}`)
       .then((res) => {
         console.log(`✅ Progress for ${playerName}:`, res.data);
-
-        // ✅ Store progress data for each player separately
-        setPlayerHistory((prevHistory) => ({
-          ...prevHistory,
-          [playerName]: res.data
-        }));
-
+        setPlayerProgress(res.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -59,7 +53,7 @@ const ProgressTracker = () => {
 
       {/* Players List */}
       <div className="progress-tracker-container">
-        {players.map((player) => (
+        {players.length > 0 ? players.map((player) => (
           <button 
             key={player._id} 
             className={`progress-tracker-box ${selectedPlayer === player.name ? "selected" : ""}`}
@@ -70,18 +64,18 @@ const ProgressTracker = () => {
             </div>
             <div className="progress-tracker-name">{player.name}</div>
           </button>
-        ))}
+        )) : <p>No players found.</p>}
       </div>
 
-      {/* ✅ Show Player Progress */}
-      {Object.keys(playerHistory).map((playerName) => (
-        <div className="progress-display" key={playerName}>
-          <h2>Game History for {playerName}</h2>
+      {/* ✅ Show Progress */}
+      {selectedPlayer && (
+        <div className="progress-display">
+          <h2>Game History for {selectedPlayer}</h2>
           {loading ? (
             <p>Loading...</p> 
-          ) : playerHistory[playerName] && playerHistory[playerName].length > 0 ? (
+          ) : playerProgress && playerProgress.length > 0 ? (
             <ul>
-              {playerHistory[playerName].map((game, index) => (
+              {playerProgress.map((game, index) => (
                 <li key={index}>
                   <strong>Module:</strong> {game.Module},  
                   <strong> Level:</strong> {game.Level},  
@@ -93,7 +87,7 @@ const ProgressTracker = () => {
             <p>No progress found.</p>
           )}
         </div>
-      ))}
+      )}
     </div>
   );
 };
