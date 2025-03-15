@@ -7,25 +7,24 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 
 const LevelSelection = () => {
   const navigate = useNavigate();
-  const { playerId } = useParams(); //Get name from DB in URL
-  console.log("Player ID:", playerId); 
+  const { playerId } = useParams();
 
-  //Update module # sa Atlas
+  // ✅ Function to Update Module in MongoDB
   const updateModule = (moduleNumber) => {
     axios.put(`${API_BASE_URL}/updateModule`, { moduleNumber })
       .then((res) => {
-        console.log(`✅ Module Updated to: ${moduleNumber}`);
+        console.log(res.data.message);
       })
       .catch((err) => {
         console.error("❌ Error updating module:", err);
       });
   };
 
-  //Update module # sa Atlas
+  // ✅ Function to Update Level in MongoDB
   const updateLevel = (levelNumber) => {
     axios.put(`${API_BASE_URL}/updateLevel`, { levelNumber })
       .then((res) => {
-        console.log(`✅ Level Updated to: ${levelNumber}`);
+        console.log(res.data.message);
       })
       .catch((err) => {
         console.error("❌ Error updating level:", err);
@@ -46,8 +45,8 @@ const LevelSelection = () => {
     >
       <h1 className="title">CHOOSE MODULE</h1>
 
-      <div className="word-length-container"> 
-        {[...Array(15)].map((_, index) => ( //Module select container
+      <div className="word-length-container">
+        {[...Array(15)].map((_, index) => (
           <button 
             key={index} 
             className="word-button" 

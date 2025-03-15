@@ -45,7 +45,49 @@ app.put("/api/updatePlayer", async (req, res) => {
     }
 });
 
-// ✅ Test Route (To confirm backend is working)
+// ✅ Update Module in Level_Select
+app.put("/api/updateModule", async (req, res) => {
+    try {
+        const { moduleNumber } = req.body;
+
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Module: moduleNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Module updated to ${moduleNumber} in Level_Select.` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Module:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Update Level in Level_Select
+app.put("/api/updateLevel", async (req, res) => {
+    try {
+        const { levelNumber } = req.body;
+
+        const result = await db.collection("Level_Select").updateOne(
+            {},  
+            { $set: { Level: levelNumber } }
+        );
+
+        if (result.matchedCount > 0) {
+            res.json({ message: `✅ Level updated to ${levelNumber} in Level_Select.` });
+        } else {
+            res.status(404).json({ message: "❌ No document found to update." });
+        }
+    } catch (error) {
+        console.error("❌ Error updating Level:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Test Route (Check if Server is Running)
 app.get("/", (req, res) => {
     res.send("✅ Server is running!");
 });
