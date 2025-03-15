@@ -8,6 +8,7 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // ✅ Fetch Players from the Database on Page Load
   useEffect(() => {
@@ -16,23 +17,25 @@ const WhoIsPlaying = () => {
       .catch((err) => console.error("❌ Error fetching players:", err));
   }, []);
 
-  // ✅ Save Progress THEN Update Player THEN Navigate
+  // ✅ Handle Player Selection, Save Progress, and Navigate
   const handleSelectPlayer = async (playerName) => {
+    if (loading) return; // Prevent multiple clicks
+    setLoading(true);
+
     try {
-      console.log(`🔵 Saving progress before switching to ${playerName}...`);
+      console.log(`🔵 Selecting ${playerName}...`);
       
-      // ✅ Step 1: Save Current Progress First
-      await axios.post(`${API_BASE_URL}/saveProgress`);
-      console.log("✅ Progress saved!");
-
-      // ✅ Step 2: Update Player
+      // ✅ Step 1: Update the player in DB
       await axios.put(`${API_BASE_URL}/updatePlayer`, { playerName });
-      console.log(`✅ Player updated to ${playerName}`);
 
-      // ✅ Step 3: Navigate to Level Selection AFTER saving progress
+      console.log(`✅ Player switched to ${playerName}`);
+
+      // ✅ Step 2: Navigate to Level Selection
       navigate(`/select-level/${playerName}`);
     } catch (err) {
-      console.error("❌ Error handling player selection:", err);
+      console.error("❌ Error selecting player:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,7 +48,7 @@ const WhoIsPlaying = () => {
             <button 
               key={player._id} 
               className="who-playing-box"
-              onClick={() => handleSelectPlayer(player.name)} // ✅ Click works now
+              onClick={() => handleSelectPlayer(player.name)}
             >
               <div className="who-playing-initial">{player.name.charAt(0).toUpperCase()}</div>
               <div className="who-playing-name">{player.name}</div>

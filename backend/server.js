@@ -20,25 +20,48 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const db = mongoose.connection;
 
-// ✅ Import Routes
-const playerRoutes = require("./routes/players"); 
-app.use("/api/players", playerRoutes); 
+// ✅ Select Player, Save Progress, and Update Level_Select
+app.put("/api/updatePlayer", async (req, res) => {
+    try {
+        const { playerName } = req.body;
+
+        // ✅ Save previous player's progress before switching
+        const currentGameData = await db.collection("Level_Select").findOne({});
+        if (currentGameData?.Player) {
+            await db.collection("Progress").insertOne({
+                Player: currentGameData.Player,
+                Module: currentGameData.Module || 0,
+                Level: currentGameData.Level || 0,
+                Date: new Date().toLocaleDateString(),
+                Time: new Date().toLocaleTimeString(),
+                Score: 0
+            });
+        }
+
+        // ✅ Update Level_Select with new player
+        await db.collection("Level_Select").updateOne(
+            {},
+            { $set: { Player: playerName, Module: 0, Level: 0 } }
+        );
+
+        res.json({ message: `✅ Player switched to ${playerName}` });
+    } catch (error) {
+        console.error("❌ Error updating Player:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
 
 // ✅ Update Selected Module
 app.put("/api/updateModule", async (req, res) => {
     try {
         const { moduleNumber } = req.body;
 
-        const result = await db.collection("Level_Select").updateOne(
-            {},  
+        await db.collection("Level_Select").updateOne(
+            {},
             { $set: { Module: moduleNumber } }
         );
 
-        if (result.matchedCount > 0) {
-            res.json({ message: `✅ Module updated to ${moduleNumber}` });
-        } else {
-            res.status(404).json({ message: "❌ No document found to update." });
-        }
+        res.json({ message: `✅ Module updated to ${moduleNumber}` });
     } catch (error) {
         console.error("❌ Error updating Module:", error);
         res.status(500).json({ message: "Server error", error });
@@ -50,49 +73,14 @@ app.put("/api/updateLevel", async (req, res) => {
     try {
         const { levelNumber } = req.body;
 
-        const result = await db.collection("Level_Select").updateOne(
-            {},  
+        await db.collection("Level_Select").updateOne(
+            {},
             { $set: { Level: levelNumber } }
         );
 
-        if (result.matchedCount > 0) {
-            res.json({ message: `✅ Level updated to ${levelNumber}` });
-        } else {
-            res.status(404).json({ message: "❌ No document found to update." });
-        }
+        res.json({ message: `✅ Level updated to ${levelNumber}` });
     } catch (error) {
         console.error("❌ Error updating Level:", error);
-        res.status(500).json({ message: "Server error", error });
-    }
-});
-
-// ✅ Save Progress AFTER Ensuring Module & Level Are Updated
-app.post("/api/saveProgress", async (req, res) => {
-    try {
-        // Fetch the latest game data from Level_Select
-        const gameData = await db.collection("Level_Select").findOne({});
-
-        if (!gameData || !gameData.Player) {
-            return res.status(404).json({ message: "❌ No active game session found." });
-        }
-
-        // ✅ Save the UPDATED module and level
-        const progressData = {
-            Player: gameData.Player,
-            Module: gameData.Module, 
-            Level: gameData.Level,
-            Date: new Date().toLocaleDateString(),
-            Time: new Date().toLocaleTimeString(),
-            Score: 0  // Set default score, can be updated later
-        };
-
-        // ✅ Insert the correct progress into wordApp.Progress
-        await db.collection("Progress").insertOne(progressData);
-
-        console.log(`✅ Progress saved: ${gameData.Player} (Module: ${gameData.Module}, Level: ${gameData.Level})`);
-        res.json({ message: `✅ Game progress saved successfully!` });
-    } catch (error) {
-        console.error("❌ Error saving progress:", error);
         res.status(500).json({ message: "Server error", error });
     }
 });
