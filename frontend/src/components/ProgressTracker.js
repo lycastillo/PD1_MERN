@@ -8,9 +8,10 @@ const API_BASE_URL = "https://t36pd2.onrender.com/api";
 const ProgressTracker = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
-  const [selectedPlayer, setSelectedPlayer] = useState(null); // ✅ Track selected player
-  const [progressData, setProgressData] = useState(null); // ✅ Store progress data
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [playerHistory, setPlayerHistory] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // ✅ Fetch Players on Page Load
   useEffect(() => {
@@ -21,45 +22,36 @@ const ProgressTracker = () => {
       })
       .catch((err) => {
         console.error("❌ Error fetching players:", err);
+        setError("Error loading players.");
       });
   }, []);
 
-  // ✅ Fetch Player Progress
-  const fetchProgress = (playerName) => {
+  // ✅ Fetch All Instances of Selected Player
+  const fetchPlayerHistory = (playerName) => {
+    setLoading(true);
+    setSelectedPlayer(playerName);
+    setPlayerHistory(null);
+
     axios.get(`${API_BASE_URL}/progress/${playerName}`)
       .then((res) => {
-        console.log(`✅ Progress for ${playerName}:`, res.data);
-        setSelectedPlayer(playerName);
-        setProgressData(res.data.progressData);
+        console.log(`✅ Game history for ${playerName}:`, res.data);
+        setPlayerHistory(res.data);
+        setLoading(false);
       })
       .catch((err) => {
-        console.error("❌ Error fetching progress:", err);
-        setSelectedPlayer(playerName);
-        setProgressData(null);
+        console.error("❌ Error fetching game history:", err);
+        setPlayerHistory(null);
+        setLoading(false);
       });
   };
 
   return (
     <div className="progress-tracker-screen">
-      {/* Top-left Logo */}
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
-
-      {/* Back Button */}
       <button className="progress-tracker-back-button" onClick={() => navigate("/")}>Back</button>
-
-      {/* Watermark Background */}
-      <img src="/new1.png" alt="Watermark" className="background-watermark" /> 
-
-      {/* Title */}
       <h1 className="progress-tracker-title">PROGRESS TRACKER</h1>
 
-      {/* Date Picker */}
-      <input 
-        type="date" 
-        className="progress-tracker-date-picker"
-        value={selectedDate}
-        onChange={(e) => setSelectedDate(e.target.value)}
-      />
+      {error && <p className="error-message">{error}</p>}
 
       {/* Players List */}
       <div className="progress-tracker-container">
@@ -67,7 +59,7 @@ const ProgressTracker = () => {
           <button 
             key={player._id} 
             className={`progress-tracker-box ${selectedPlayer === player.name ? "selected" : ""}`}
-            onClick={() => fetchProgress(player.name)} // ✅ Click to load progress
+            onClick={() => fetchPlayerHistory(player.name)}
           >
             <div className="progress-tracker-initial">
               {player.name.charAt(0).toUpperCase()}
@@ -77,18 +69,24 @@ const ProgressTracker = () => {
         ))}
       </div>
 
-      {/* Display Selected Player's Progress */}
+      {/* ✅ Show Player Game History */}
       {selectedPlayer && (
         <div className="progress-display">
-          <h2>Progress for {selectedPlayer}</h2>
-          {progressData ? (
+          <h2>Game History for {selectedPlayer}</h2>
+          {loading ? (
+            <p>Loading...</p> 
+          ) : playerHistory && playerHistory.length > 0 ? (
             <ul>
-              {Object.entries(progressData).map(([key, value]) => (
-                <li key={key}><strong>{key}:</strong> {value}</li>
+              {playerHistory.map((game, index) => (
+                <li key={index}>
+                  <strong>Module:</strong> {game.Module},  
+                  <strong> Level:</strong> {game.Level},  
+                  <strong> Time:</strong> {new Date(game.timestamp).toLocaleString()}
+                </li>
               ))}
             </ul>
           ) : (
-            <p>No progress data found.</p>
+            <p>No game history found.</p>
           )}
         </div>
       )}

@@ -2,27 +2,36 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 
-//Progress Schema
-const progressSchema = new mongoose.Schema({
-    playerName: String,
-    progressData: Object 
+// ✅ Define Level_Select Schema
+const levelSelectSchema = new mongoose.Schema({
+    Player: String,
+    Module: Number,
+    Level: Number,
+    Initialize: Number,
+    timestamp: { type: Date, default: Date.now } // ✅ Adds timestamp for sorting
 });
-const Progress = mongoose.model("Progress", progressSchema, "Progress");
+const LevelSelect = mongoose.model("LevelSelect", levelSelectSchema, "Level_Select");
 
-// GET Progress by Name
+// ✅ GET ALL Instances of Player from Level_Select
 router.get("/:playerName", async (req, res) => {
     try {
-        const { playerName } = req.params;
-        const playerProgress = await Progress.findOne({ playerName });
+        const playerName = req.params.playerName.trim();
+        console.log(`🔍 Searching game history for: '${playerName}'`);
 
-        if (!playerProgress) {
-            return res.status(404).json({ message: "No progress found for this player" });
+        // ✅ Find all instances where this player played
+        const playerHistory = await LevelSelect.find({ Player: { $regex: `^${playerName}$`, $options: "i" } })
+            .sort({ timestamp: -1 }); // ✅ Sort by latest game first
+
+        if (!playerHistory.length) {
+            console.log(`❌ No game history found for ${playerName}`);
+            return res.status(404).json({ message: `No game history found for ${playerName}` });
         }
 
-        res.json(playerProgress);
+        console.log(`✅ Game history found for ${playerName}:`, playerHistory);
+        res.json(playerHistory);
     } catch (err) {
-        console.error("Error fetching player progress:", err);
-        res.status(500).json({ message: "Error retrieving progress", error: err.message });
+        console.error("❌ Error fetching player history:", err);
+        res.status(500).json({ message: "Error retrieving game history", error: err.message });
     }
 });
 
