@@ -8,12 +8,12 @@ const playerSchema = new mongoose.Schema({
 });
 const Player = mongoose.model("Player", playerSchema, "players");
 
-// ✅ GET All Players from wordApp.players
+// ✅ GET All Players
 router.get("/", async (req, res) => {
     try {
         const players = await Player.find({});
         if (!players.length) {
-            return res.status(404).json({ message: "❌ No players found in database." });
+            return res.status(404).json({ message: "❌ No players found." });
         }
 
         console.log("✅ Players fetched successfully:", players);
