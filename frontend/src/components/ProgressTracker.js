@@ -9,7 +9,7 @@ const ProgressTracker = () => {
   const navigate = useNavigate();
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
-  const [playerProgress, setPlayerProgress] = useState({});
+  const [playerProgress, setPlayerProgress] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -26,6 +26,24 @@ const ProgressTracker = () => {
       });
   }, []);
 
+  // ✅ Fetch Player Progress History
+  const fetchPlayerProgress = (playerName) => {
+    setLoading(true);
+    setSelectedPlayer(playerName);
+
+    axios.get(`${API_BASE_URL}/progress/${playerName}`)
+      .then((res) => {
+        console.log(`✅ Progress history for ${playerName}:`, res.data);
+        setPlayerProgress(res.data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("❌ Error fetching progress:", err);
+        setPlayerProgress([]); // Ensure empty state instead of breaking UI
+        setLoading(false);
+      });
+  };
+
   return (
     <div className="progress-tracker-screen">
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
@@ -34,13 +52,13 @@ const ProgressTracker = () => {
 
       {error && <p className="error-message">{error}</p>}
 
-      {/* ✅ Players List */}
+      {/* Players List */}
       <div className="progress-tracker-container">
         {players.length > 0 ? players.map((player) => (
           <button 
             key={player._id} 
             className="progress-tracker-box"
-            onClick={() => navigate(`/progress/${player.name}`)}
+            onClick={() => fetchPlayerProgress(player.name)}
           >
             <div className="progress-tracker-initial">
               {player.name.charAt(0).toUpperCase()}
@@ -49,6 +67,28 @@ const ProgressTracker = () => {
           </button>
         )) : <p>No players found.</p>}
       </div>
+
+      {/* ✅ Show Progress */}
+      {selectedPlayer && (
+        <div className="progress-display">
+          <h2>Game History for {selectedPlayer}</h2>
+          {loading ? (
+            <p>Loading...</p> 
+          ) : playerProgress.length > 0 ? (
+            <ul>
+              {playerProgress.map((game, index) => (
+                <li key={index}>
+                  <strong>Module:</strong> {game.Module},  
+                  <strong> Level:</strong> {game.Level},  
+                  <strong> Time:</strong> {new Date(game.timestamp).toLocaleString()}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>No progress history found.</p>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -87,6 +87,47 @@ app.put("/api/updateLevel", async (req, res) => {
     }
 });
 
+// ✅ Save Game Progress to Progress Collection
+app.post("/api/saveProgress", async (req, res) => {
+    try {
+        const { playerName, moduleNumber, levelNumber } = req.body;
+
+        const progressData = {
+            Player: playerName,
+            Module: moduleNumber,
+            Level: levelNumber,
+            timestamp: new Date()
+        };
+
+        await db.collection("Progress").insertOne(progressData);
+
+        res.json({ message: "✅ Progress saved successfully!" });
+    } catch (error) {
+        console.error("❌ Error saving progress:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+// ✅ Fetch Progress History for Selected Player
+app.get("/api/progress/:playerName", async (req, res) => {
+    try {
+        const playerName = req.params.playerName;
+
+        // Find all records where Player matches the clicked player
+        const progressData = await db.collection("Progress").find({ Player: playerName }).toArray();
+
+        if (!progressData.length) {
+            return res.status(404).json({ message: `❌ No progress data found for ${playerName}.` });
+        }
+
+        console.log(`✅ Progress data found for ${playerName}:`, progressData);
+        res.json(progressData);
+    } catch (error) {
+        console.error("❌ Error fetching progress:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
 // ✅ Test Route (Check if Server is Running)
 app.get("/", (req, res) => {
     res.send("✅ Server is running!");
