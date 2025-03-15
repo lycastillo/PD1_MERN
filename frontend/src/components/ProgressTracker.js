@@ -39,7 +39,7 @@ const ProgressTracker = () => {
       })
       .catch((err) => {
         console.error("❌ Error fetching progress:", err);
-        setPlayerProgress([]); // Ensure empty state instead of breaking UI
+        setPlayerProgress([]); // Prevent breaking UI
         setLoading(false);
       });
   };
@@ -52,7 +52,7 @@ const ProgressTracker = () => {
 
       {error && <p className="error-message">{error}</p>}
 
-      {/* Players List */}
+      {/* ✅ Players List */}
       <div className="progress-tracker-container">
         {players.length > 0 ? players.map((player) => (
           <button 
@@ -72,9 +72,7 @@ const ProgressTracker = () => {
       {selectedPlayer && (
         <div className="progress-display">
           <h2>Game History for {selectedPlayer}</h2>
-          {loading ? (
-            <p>Loading...</p> 
-          ) : playerProgress.length > 0 ? (
+          {loading ? <p>Loading...</p> : playerProgress.length > 0 ? (
             <ul>
               {playerProgress.map((game, index) => (
                 <li key={index}>
@@ -84,9 +82,7 @@ const ProgressTracker = () => {
                 </li>
               ))}
             </ul>
-          ) : (
-            <p>No progress history found.</p>
-          )}
+          ) : <p>No progress history found.</p>}
         </div>
       )}
     </div>

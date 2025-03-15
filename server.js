@@ -30,7 +30,7 @@ app.put("/api/updatePlayer", async (req, res) => {
         const { playerName } = req.body;
 
         const result = await db.collection("Level_Select").updateOne(
-            {},  // Update the first found document
+            {},  
             { $set: { Player: playerName } }
         );
 
@@ -87,21 +87,29 @@ app.put("/api/updateLevel", async (req, res) => {
     }
 });
 
-// ✅ Save Game Progress to Progress Collection
+// ✅ Save Game Progress to Progress Collection (After Player Finishes Game)
 app.post("/api/saveProgress", async (req, res) => {
     try {
-        const { playerName, moduleNumber, levelNumber } = req.body;
+        // Fetch the current game session data from Level_Select
+        const gameData = await db.collection("Level_Select").findOne({});
 
+        if (!gameData || !gameData.Player) {
+            return res.status(404).json({ message: "❌ No active game session found." });
+        }
+
+        // Prepare the data to store in Progress collection
         const progressData = {
-            Player: playerName,
-            Module: moduleNumber,
-            Level: levelNumber,
+            Player: gameData.Player,
+            Module: gameData.Module,
+            Level: gameData.Level,
             timestamp: new Date()
         };
 
+        // Insert the progress data into wordApp.Progress
         await db.collection("Progress").insertOne(progressData);
 
-        res.json({ message: "✅ Progress saved successfully!" });
+        console.log(`✅ Progress saved for ${gameData.Player}`);
+        res.json({ message: "✅ Game progress saved successfully!" });
     } catch (error) {
         console.error("❌ Error saving progress:", error);
         res.status(500).json({ message: "Server error", error });
@@ -113,7 +121,7 @@ app.get("/api/progress/:playerName", async (req, res) => {
     try {
         const playerName = req.params.playerName;
 
-        // Find all records where Player matches the clicked player
+        // Fetch all records where Player matches the clicked player
         const progressData = await db.collection("Progress").find({ Player: playerName }).toArray();
 
         if (!progressData.length) {
@@ -126,11 +134,6 @@ app.get("/api/progress/:playerName", async (req, res) => {
         console.error("❌ Error fetching progress:", error);
         res.status(500).json({ message: "Server error", error });
     }
-});
-
-// ✅ Test Route (Check if Server is Running)
-app.get("/", (req, res) => {
-    res.send("✅ Server is running!");
 });
 
 // ✅ Start Server
