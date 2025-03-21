@@ -3,7 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./LevelSelection.css";
 
-const API_BASE_URL = "https://t36pd2.onrender.com/api";
+const API_BASE_URL = "/api/proxy";
+
 
 const LevelSelection = () => {
   const navigate = useNavigate();

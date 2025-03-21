@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./WhoIsPlaying.css";
 
-const API_BASE_URL = "https://t36pd2.onrender.com/api";
+const API_BASE_URL = "/api/proxy";
+
 
 const WhoIsPlaying = () => {
   const navigate = useNavigate();
