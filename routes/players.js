@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
+const { ObjectId } = require("mongodb");
 
 const db = mongoose.connection;
 
@@ -15,27 +16,42 @@ router.get("/", async (req, res) => {
     }
 });
 
-// ✅ Add New Player
+// ✅ Add New Player (with duplicate check)
 router.post("/", async (req, res) => {
     try {
         const { name } = req.body;
-        const newPlayer = { name };
+        if (!name || name.trim() === "") {
+            return res.status(400).json({ message: "Name cannot be empty." });
+        }
 
-        await db.collection("players").insertOne(newPlayer);
-        res.json(newPlayer);
+        const existingPlayer = await db.collection("players").findOne({ name });
+
+        if (existingPlayer) {
+            return res.status(400).json({ message: "Player name already exists." });
+        }
+
+        const newPlayer = { name };
+        const result = await db.collection("players").insertOne(newPlayer);
+
+        res.status(201).json({ _id: result.insertedId, name });
     } catch (error) {
         console.error("❌ Error adding player:", error);
         res.status(500).json({ message: "Server error", error });
     }
 });
 
-// ✅ Delete Player
-router.delete("/:name", async (req, res) => {
+// ✅ Delete Player by ID
+router.delete("/:id", async (req, res) => {
     try {
-        const playerName = req.params.name;
+        const playerId = req.params.id;
 
-        await db.collection("players").deleteOne({ name: playerName });
-        res.json({ message: `✅ Player ${playerName} deleted successfully.` });
+        const result = await db.collection("players").deleteOne({ _id: new ObjectId(playerId) });
+
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "❌ Player not found." });
+        }
+
+        res.json({ message: `✅ Player deleted successfully.` });
     } catch (error) {
         console.error("❌ Error deleting player:", error);
         res.status(500).json({ message: "Server error", error });
