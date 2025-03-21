@@ -17,11 +17,16 @@ const WhoIsPlaying = () => {
 
   // Fetch players from the database
   useEffect(() => {
+    fetchPlayers();
+  }, []);
+  
+  const fetchPlayers = () => {
     axios
       .get(`${API_BASE_URL}/players`)
       .then((res) => setPlayers(res.data))
       .catch((err) => console.error("Error fetching players:", err));
-  }, []);
+  };
+  
 
   // Add a new player
   const handleEnter = () => {
@@ -31,20 +36,21 @@ const WhoIsPlaying = () => {
     }
 
     axios
-      .post(`${API_BASE_URL}/players`, { name: newPlayerName })
-      .then((res) => {
-        setPlayers([...players, res.data]);
-        setNewPlayerName("");
-        setShowDialog(false);
-        setErrorMessage("");
-      })
-      .catch((err) => {
-        if (err.response?.status === 409) {
-          setErrorMessage("❌ Name already exists. Try another.");
-        } else {
-          setErrorMessage("❌ Could not add player. Try again.");
-        }
-      });
+    .post(`${API_BASE_URL}/players`, { name: newPlayerName })
+    .then((res) => {
+      setPlayers([...players, res.data]);
+      setNewPlayerName("");
+      setShowDialog(false);
+      setErrorMessage("");
+    })
+    .catch((err) => {
+      if (err.response?.status === 409) {
+        setErrorMessage("❌ Name already exists. Try another.");
+      } else {
+        setErrorMessage("❌ Could not add player. Try again.");
+      }
+    });
+  
   };
 
   // Delete a player
@@ -89,10 +95,12 @@ const WhoIsPlaying = () => {
             <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
             <div className="player-name">{player.name}</div>
             {isManageMode && (
-              <button className="delete-player" onClick={(e) => {
-                e.stopPropagation();
-                setDeletePlayerName(player.name);
-                setShowDeleteDialog(true);
+             <button
+             className="delete-player"
+             onClick={(e) => {
+               e.stopPropagation();
+               setDeletePlayerName(player.name); // ✅ Not player._id
+               setShowDeleteDialog(true);
               }}>X</button>
             )}
           </button>

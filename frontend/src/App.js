@@ -43,7 +43,7 @@ function App() {
       <Routes>
       <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
-        <Route path="/select-level/:playerId" element={<LevelSelection />} /> 
+        <Route path="/select-level" element={<LevelSelection />} />
         <Route path="/progress-tracker" element={<ProgressTracker />} />
         <Route path="/how-to-play" element={<HowToPlay />} /> 
       </Routes>
