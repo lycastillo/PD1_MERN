@@ -1,12 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
 
+.who-playing-screen {
+  background-image: url("../components/game-UI.png"); /* adjust if your image is elsewhere */
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+  width: 100vw;
+    overflow: hidden; /* ✅ Prevent both scrolls from body */
+  }
+
 body, html {
   margin: 0;
   padding: 0;
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: #E8F56B !important; /* Ensure yellow background */
 }
 
 /* 🔹 Main Container */
@@ -85,19 +94,24 @@ body, html {
 
 /* 🔹 Players Section - Ensuring 4+ Profiles & Scroll */
 .players-container {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 30px;
   justify-content: center;
-  gap: 20px;
-  width: 800px; /* Adjusted width to fit 4 boxes */
-  max-width: 100%;
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 10px;
-  margin-top: 100px; /* Adjusted margin */
-  position: relative;
-  z-index: 10;
+  justify-items: center;
+  align-items: start;
+  width: 70vw;
+  max-width: 800px;
+  margin-top: 35px;
+  padding: 0 10px 100px; /* leave space for Manage Players */
+  box-sizing: border-box;
 }
+
+
+
+
+
+
 
 /* 🔹 Themed Scrollbar */
 .players-container::-webkit-scrollbar {
@@ -118,7 +132,7 @@ body, html {
 /* 🔹 Player Boxes - Adjusted to Fit 4 in a Row */
 /* 🔹 Player Box - Add Position Relative for "X" */
 .player-box {
-  background-color: #D94924;
+  background-color: #65DA5A; /* green */
   width: 180px;
   height: 180px;
   display: flex;
@@ -129,21 +143,16 @@ body, html {
   flex-shrink: 0;
   position: relative;
   transition: all 0.3s ease-in-out;
+  box-shadow: 3px 3px 0 #000;
 }
 
-.players-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-}
 
 /* 🔹 "X" Delete Button (Hidden by Default) */
 .delete-player {
   position: absolute;
   top: 8px;
   right: 8px;
-  background: #F642FD; /* Pinkish Red */
+  background: rgba(241, 212, 79, 0.8); /* Pinkish Red */
   color: white;
   border: none;
   border-radius: 50%;
@@ -190,7 +199,7 @@ body, html {
 
 /* 🔹 Dialog Box */
 .dialog-box {
-  background-color: #707AD4;
+  background-color: rgba(241, 212, 79, 0.8); /* semi-transparent blue */
   padding: 25px;
   border-radius: 20px;
   animation: bounceIn 0.7s ease-in-out;
@@ -199,20 +208,23 @@ body, html {
   align-items: center;
   flex-direction: column;
   z-index: 9999;
+  backdrop-filter: blur(15px); /* ✅ Blur inside box for extra polish */
 }
 
 /* 🔹 Inner Box */
 .inner-box {
-  background-color: #2F55AA;
-  padding: 30px;
+  background-color: rgba(72, 146, 38, 0.85); /* deeper semi-transparent blue */
+  padding: 40px 30px;
   border-radius: 15px;
   text-align: center;
   width: 400px;
+  color: white;
+  position: relative;
 }
 
 /* 🔹 Delete Confirmation Buttons */
 .confirm-button, .cancel-button {
-  background-color: #F642FD;
+  background-color: rgba(241, 212, 79, 0.8);
   color: white;
   font-size: 20px;
   border: none;
@@ -250,11 +262,7 @@ body, html {
 
 /* 🔹 When More Players Exist, Adjust to Fit 5 in One Row */
 @media (max-width: 1200px) {
-  .players-container {
-    grid-template-columns: repeat(5, 1fr); /* 5 players per row */
-    max-height: 450px;
-    overflow-y: auto;
-  }
+  
 
   .player-box {
     width: 160px;
@@ -284,9 +292,16 @@ body, html {
 }
 
 .add-player-box p {
-  margin-top: 5px; /* Change this from 35px to 5px */
-  font-size: 30px; /* Slightly reduce text size if needed */
+  margin-top: 10px; /* Change this from 35px to 5px */
+  font-size: 20px; /* Slightly reduce text size if needed */
 }
+
+.player-box:hover {
+  transform: scale(1.05);
+  box-shadow: 4px 4px 0 #000, 0 0 10px #00FF7F;
+  transition: all 0.2s ease-in-out;
+}
+
 
 /* 🔹 Move Add Player Button Below Players */
 .players-container.has-players .add-player-box {
@@ -300,18 +315,7 @@ body, html {
 }
 
 /* 🔹 Move "Add Player" Button Beside the Last Player */
-.players-container.has-players {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 20px;
-  width: 600px;
-  height: auto;
-  position: relative;
-  margin-top: 120px;
-  z-index: 1;
-}
+
 
 /* 🔹 "Add Player" Button Moves to the Right of Players */
 .players-container.has-players .add-player-box {
@@ -326,20 +330,21 @@ body, html {
 
 /* 🔹 Add Icon */
 .add-icon {
-  background-color: #6A5ACD;
+  background-color: #782600;
   color: white;
-  font-size: 30px;
+  font-size: 35px;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   display: flex;
   justify-content: center;
   align-items: center;
+  margin-top: 20px;
 }
 
 .add-player-box p {
-  color: #707AD4;
-  font-size: 35px;
+  color: #782600;
+  font-size: 30px;
 }
 
 /* 🔹 Manage Players Button - Fixed */
@@ -432,7 +437,7 @@ body, html {
 
 /* 🔹 Enter Button */
 .enter-button {
-  background-color: #F642FD;
+  background-color: rgba(241, 212, 79, 0.8);
   color: white;
   font-size: 22px;
   border: none;
@@ -449,4 +454,14 @@ body, html {
   100% { transform: scale(1); }
 }
 
-
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 18px;
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+}

@@ -1,60 +1,301 @@
 @import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
 
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100vh;
+.progress-tracker-screen {
+  background-image: url("../components/game-UI.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
   width: 100vw;
-  overflow: hidden;
-  background-color: #D94924 !important; 
+  overflow-x: hidden;
+  font-family: 'Lilita One', cursive;
+  padding: 0;
+  margin: 0;
 }
 
-.progress-tracker-screen {
-  width: 100vw;
-  height: 100vh;
+/* Title */
+.progress-tracker-title {
+  font-size: 60px;
+  text-align: center;
+  color: #40C000;
+  text-shadow: 3px 3px 0 #000;
+  margin-top: 40px;
+}
+
+/* Layout */
+.progress-tracker-layout {
+  display: flex;
+  margin-top: 30px;
+  padding: 0 40px;
+  gap: 30px;
+  align-items: flex-start; /* Align top of both sections */
+  height: 500px; /* Set fixed height to match the graph container */
+}
+
+/* Player Sidebar */
+.player-sidebar {
   display: flex;
   flex-direction: column;
+  gap: 13px;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+}
+
+.player-sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+.player-sidebar::-webkit-scrollbar-thumb {
+  background: yellow;
+  border-radius: 5px;
+}
+
+/* Player Card */
+.progress-tracker-box {
+  background: #f5f56a;
+  padding: 25px;
+  border-radius: 15px;
+  text-align: center;
+  width: 180px;
+  cursor: pointer;
+  transition: transform 0.2s;
+  font-size: 18px;
+}
+.progress-tracker-box:hover {
+  transform: scale(1.05);
+}
+
+.progress-tracker-box.active {
+  background: yellow;
+  border: 4px solid #0a0a0a;
+}
+
+/* Player initials */
+.progress-tracker-initial {
+  font-size: 32px;
+  font-weight: bold;
+}
+
+.progress-tracker-name {
+  font-size: 20px;
+  font-weight: normal;
+}
+
+  .chart-container {
+    flex: 1;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 20px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    max-height: 500px; /* ✅ Set max height */
+    overflow-x: hidden;
+    max-height: 500px;
+    overflow-y: auto;
+  }
+
+  .table-view {
+    overflow-y: auto;
+    max-height: 300px; /* Adjust based on your toggle + filter height */
+  }
+
+  .improvement-dot {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-left: 8px;
+    position: relative;
+    cursor: help;
+  }
+
+  .improvement-tooltip {
+    visibility: hidden;
+    opacity: 0;
+    width: max-content;
+    max-width: 220px;
+    background-color: #fff;
+    color: #333;
+    text-align: left;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 10px;
+    border-radius: 10px;
+    border: 1px solid #aaa;
+    position: absolute;
+    z-index: 100;
+    top: 140%;
+    left: 50%;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease-in-out;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    white-space: normal;
+  }
+  
+  .improvement-dot.green {
+    background-color: green;
+  }
+  
+  .improvement-dot.orange {
+    background-color: orange;
+  }
+  
+  .tooltip-content {
+    display: none;
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+    z-index: 10;
+  }
+  
+  .improvement-dot:hover .improvement-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+  
+  
+  .graph-view {
+    overflow-y: auto;
+    max-height: 340px;
+  }
+
+  .table-view table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-view th,
+  .table-view td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .table-view thead th {
+    background-color: #65DA5A;
+    color: black;
+  }
+  
+
+/* Filters under chart */
+.filters-under-chart {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  margin-top: 20px;
+  font-size: 18px;
+}
+
+.filters-wrapper {
+  display: flex;
+  gap: 15px; /* 👈 adds spacing between the dropdowns */
   align-items: center;
   justify-content: center;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: #D94924 !important; 
+  margin-top: 5px;
 }
 
-
-.progress-tracker-title {
-  font-size: 80px;
-  font-weight: bold;
-  text-transform: uppercase;
-  color: #33cc33; 
-  text-shadow: 5px 5px 0 #fff;
-  position: absolute;
-  top: 35px;
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  z-index: 10;
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-
-.progress-tracker-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  max-width: 800px;
-  height: auto;
-  opacity: 0.2;
-  z-index: 0;
+.view-label {
+  font-size: 18px;
+  color: #782600;
 }
 
+/* Fancy Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 32px;
+}
 
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background-color: #F642FD;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px; width: 26px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #65DA5A;
+}
+
+input:checked + .slider:before {
+  transform: translateX(28px);
+}
+
+/* Table view styles */
+.table-view table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  font-size: 16px;
+}
+
+.table-view th, .table-view td {
+  padding: 12px 15px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.table-view th {
+  background-color: #65DA5A;
+  color: #000;
+}
+
+.table-view tr:last-child td {
+  border-bottom: none;
+}
+
+.dropdown-filter {
+  padding: 9px 20px;
+  border-radius: 10px;
+  border: 2px solid #000;
+  font-size: 16px;
+}
+
+/* Back Button */
 .progress-tracker-back-button {
   position: absolute;
-  top: 15px;
-  right: 20px;
+  top: 20px;
+  right: 30px;
   background-color: #F642FD;
   color: white;
   font-size: 18px;
@@ -62,75 +303,4 @@ body, html {
   border-radius: 20px;
   padding: 10px 20px;
   cursor: pointer;
-  z-index: 3;
-}
-
-/* 🔹 Players Section */
-.progress-tracker-container {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 15px;
-  width: 900px;
-  max-width: 100%;
-  max-height: 400px;
-  overflow-y: auto;
-  padding: 10px;
-  margin-top: 120px;
-  z-index: 1;
-}
-
-/* 🔹 Player Box - Always Yellow */
-.progress-tracker-box {
-  background-color: #E8F56B !important; /* Always Yellow */
-  width: 180px;
-  height: 180px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  flex-shrink: 0;
-  position: relative;
-  transition: all 0.3s ease-in-out;
-}
-
-/* 🔹 Player Initials - Always Orange */
-.progress-tracker-initial {
-  font-size: 70px;
-  color: #D94924 !important; /* Always Orange */
-  text-shadow: 4px 4px 0 #782600;
-}
-
-/* 🔹 Player Name */
-.progress-tracker-name {
-  color: #782600;
-  font-size: 22px;
-  margin-top: 5px;
-}
-
-/* 🔹 Date Picker */
-.progress-tracker-date-picker {
-  margin-top: 90px;
-  padding: 10px;
-  font-size: 18px;
-  border: 3px solid #33cc33;
-  background-color: #E8F56B;
-  color: black;
-  border-radius: 10px;
-  cursor: pointer;
-  z-index: 2;
-}
-
-.background-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 500px;
-  max-width: 800px;
-  height: auto;
-  opacity: 0.2;
-  z-index: 999999;
 }

@@ -67,8 +67,13 @@ body {
 }
 
 /* Adjusted button sizes */
-.play-now, .progress-tracker {
+.play-now {
   width: 380px;
+  height: 250px;
+}
+
+.progress-tracker {
+  width: 735px;
   height: 250px;
 }
 
@@ -94,8 +99,8 @@ body {
 }
 
 .progress-tracker {
-  background-color: #D94924;
-  color: #E8F56B;
+  background-color: #b2fba5;
+  color: #D94924;
 }
 
 /* Button Images */
@@ -171,4 +176,9 @@ body {
   100% {
     transform: translateY(0%);
   }
+}
+
+/* Make Progress Tracker take 2 columns */
+.progress-tracker.full-width {
+  grid-column: span 3;
 }

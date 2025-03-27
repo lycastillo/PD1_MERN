@@ -54,3 +54,5 @@ async function updateLevel(levelNumber) {
     }
 }
 
+module.exports = { updateModule, updateLevel };
+

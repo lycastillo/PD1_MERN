@@ -5,14 +5,14 @@ import "./WelcomeScreen.css";
 const WelcomeScreen = () => {
   const navigate = useNavigate();
   const [showWipe, setShowWipe] = useState(false);
-  const [wipeTarget, setWipeTarget] = useState(""); // Track which button is clicked
+  const [wipeTarget, setWipeTarget] = useState(""); 
 
   const handleNavigation = (path) => {
-    setShowWipe(true); // Start wipe effect
-    setWipeTarget(path); // Set target page
+    setShowWipe(true); 
+    setWipeTarget(path); 
     setTimeout(() => {
-      navigate(path); // Navigate after animation
-    }, 400); // Match animation duration
+      navigate(path); 
+    }, 400); 
   };
 
   return (
@@ -27,10 +27,7 @@ const WelcomeScreen = () => {
         width: "100vw",
       }}
     >
-      {/* Wipe Transition */}
       {showWipe && <div className={`wipe-transition ${wipeTarget === "/progress-tracker" ? "orange-wipe" : "yellow-wipe"}`}></div>}
-
-      {/* Main Content */}
       <div className="image-container">
         <img src="/new1.png" alt="Welcome Character" className="main-image" />
       </div>
@@ -46,16 +43,14 @@ const WelcomeScreen = () => {
   <span>HOW TO PLAY</span>
 </button>
 
-        <button className="menu-button settings">
-          <img src="/new4.png" alt="Settings" />
-          <span>SETTINGS</span>
-        </button>
-
-        <button className="menu-button progress-tracker" onClick={() => handleNavigation("/progress-tracker")}>
-          <img src="/new5.png" alt="Progress Tracker" />
-          <span>PROGRESS TRACKER</span>
-        </button>
-      </div>
+<button
+    className="menu-button progress-tracker full-width"
+    onClick={() => handleNavigation("/progress-tracker")}
+  >
+    <img src="/new5.png" alt="Progress Tracker" />
+    <span>PROGRESS TRACKER</span>
+  </button>
+</div>
     </div>
   );
 };

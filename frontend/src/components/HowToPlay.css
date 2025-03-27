@@ -11,28 +11,22 @@ body, html {
 
 /* How To Play Screen */
 .how-to-play-screen {
-    background-color: #FF4CFD !important; /* Bright pink */
-    width: 100vw;
+    background-image: url("../components/game-UI.png"); /* or update path if needed */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+  
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     position: relative;
-}
+  }
+  
 
-/* Watermark */
-.background-watermark {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 600px; /* Adjust as needed */
-    max-width: 80%;
-    height: auto;
-    opacity: 0.2; /* Low opacity */
-    z-index: 0; /* Ensure it's behind everything */
-}
+
 
 /* Title */
 .title {
