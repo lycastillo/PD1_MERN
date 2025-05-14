@@ -6,64 +6,55 @@ body, html {
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-    background-color: #FF4CFD !important; /* Bright pink background */
+    background-color: #FF4CFD !important;
 }
 
-/* How To Play Screen */
 .how-to-play-screen {
-    background-image: url("../components/game-UI.png"); /* or update path if needed */
+    background-image: url("../components/game-UI.png");
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     height: 100vh;
     width: 100vw;
     overflow: hidden;
-  
     display: flex;
     flex-direction: column;
     align-items: center;
     position: relative;
-  }
-  
+}
 
-
-
-/* Title */
 .title {
     font-size: 80px;
     font-weight: bold;
     text-transform: uppercase;
-    color: #65DA5A; /* Green */
-    text-shadow: 4px 4px 0 #000; /* Black shadow */
+    color: #65DA5A;
+    text-shadow: 4px 4px 0 #000;
     margin-top: 30px;
     left: 250px;
     position: relative;
-    z-index: 1; /* Ensures it appears above the watermark */
+    z-index: 1;
 }
 
-/* Steps Container */
 .steps-container {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: 40px;
-    margin-top: 20px;
+    margin-top: 90px;
     position: relative;
     z-index: 1;
 }
 
-/* Step Boxes */
 .step-box {
-    background-color: #E8F56B; /* Yellow */
-    color: #65DA5A; /* Dark text */
+    background-color: #E8F56B;
+    color: #65DA5A;
     width: 250px;
     height: 280px;
     display: flex;
     align-items: center;
     justify-content: center;
     border-radius: 25px;
-    font-size: 26px;
-    font-weight: bold;
+    font-size: 23px;
     text-align: center;
     text-shadow: 2px 2px 0 #000;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
@@ -71,9 +62,8 @@ body, html {
     z-index: 1;
 }
 
-/* Play Button */
 .play-button {
-    background-color: #E8F56B; /* Yellow */
+    background-color: #E8F56B;
     color: black;
     font-size: 20px;
     font-weight: bold;
@@ -92,7 +82,6 @@ body, html {
     color: white;
 }
 
-/* Back Button */
 .back-button {
     position: absolute;
     top: 15px;
@@ -113,7 +102,6 @@ body, html {
     color: white;
 }
 
-/* Logo */
 .top-left-logo {
     position: absolute;
     top: 10px;

@@ -1,4 +1,4 @@
-// src/components/BackgroundWrapper.js
+
 import React from "react";
 import "./BackgroundWrapper.css";
 

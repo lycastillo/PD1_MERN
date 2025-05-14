@@ -28,7 +28,7 @@ const LevelSelection = () => {
         console.log(`✅ Level ${levelNumber} selected`);
         setTimeout(() => {
           navigate("/waiting-page");
-        }, 500); // ⏳ Wait 0.5 seconds before navigating
+        }, 500); 
       })
       .catch((err) => console.error("❌ Error updating level:", err));
   };
@@ -81,9 +81,7 @@ const LevelSelection = () => {
         })}
       </div>
 
-      <button className="back-button" onClick={() => navigate("/who-is-playing")}>
-        Back
-      </button>
+      <button className="back-button" onClick={() => navigate("/who-is-playing")}>Back</button>
     </div>
   );
 };

@@ -35,7 +35,7 @@ body, html {
 
 /* 🔹 Title */
 .title {
-  font-size: 80px;
+  font-size: 70px;
   font-weight: bold;
   text-transform: uppercase;
   color: #65DA5A; /* Green */
@@ -44,8 +44,8 @@ body, html {
   width: 100%;
   position: relative;
   margin: 0 auto;
-  top: 50px; /* Moves it down slightly */
-  left: 20px;
+  top: 70px; /* Moves it down slightly */
+  left: 110px;
   transform: translateX(-18%); /* Ensures perfect centering */
   display: flex;
   justify-content: center;
@@ -102,10 +102,13 @@ body, html {
   align-items: start;
   width: 70vw;
   max-width: 800px;
-  margin-top: 35px;
-  padding: 0 10px 100px; /* leave space for Manage Players */
+  margin-top: 100px;
+  padding: 10px 10px 120px; /* space for Manage Players button */
   box-sizing: border-box;
+  height: 60vh;              /* 🟡 NEW: fixed height for scroll area */
+  overflow-y: auto;          /* 🟢 NEW: scroll when overflow happens */
 }
+
 
 
 
@@ -184,45 +187,47 @@ body, html {
   100% { transform: rotate(-2deg); }
 }
 
-/* 🔹 Delete Confirmation Dialog */
 .dialog-overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
   height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4); /* dim background */
   display: flex;
-  align-items: center;
   justify-content: center;
-  z-index: 5;
+  align-items: center;
+  z-index: 2000;
 }
 
-/* 🔹 Dialog Box */
+
 .dialog-box {
-  background-color: rgba(241, 212, 79, 0.8); /* semi-transparent blue */
-  padding: 25px;
-  border-radius: 20px;
+  background-color: rgba(241, 212, 79, 0.95);
+  border-radius: 15px;
   animation: bounceIn 0.7s ease-in-out;
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;
   z-index: 9999;
-  backdrop-filter: blur(15px); /* ✅ Blur inside box for extra polish */
+  backdrop-filter: blur(15px);
 }
 
-/* 🔹 Inner Box */
 .inner-box {
-  background-color: rgba(72, 146, 38, 0.85); /* deeper semi-transparent blue */
-  padding: 40px 30px;
+  background-color: #2F55AA;
+  padding: 20px;
   border-radius: 15px;
   text-align: center;
   width: 400px;
-  color: white;
-  position: relative;
 }
 
-/* 🔹 Delete Confirmation Buttons */
+.inner-box h2 {
+  font-size: 28px;
+  font-weight: 12;
+  color: #b3d41f;
+  text-shadow: 2px 2px 0 #31302f;
+}
+
 .confirm-button, .cancel-button {
   background-color: rgba(241, 212, 79, 0.8);
   color: white;
@@ -389,18 +394,6 @@ body, html {
   z-index: 1000; /* Behind popup */
 }
 
-/* ✅ Ensure Popup is on Top */
-.dialog-overlay {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  border-radius: 10px;
-  z-index: 2000; /* Higher than the blur */
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-}
-
 /* ✅ Ensure background elements are unclickable */
 .blur-background .players-container,
 .blur-background .title,
@@ -417,9 +410,9 @@ body, html {
 
 /* 🔹 Inner Box */
 .inner-box {
-  background-color: #2F55AA;
-  padding: 30px;
-  border-radius: 15px;
+  background-color: #32ade6;
+  padding: 100px;
+  border-radius: 20px;
   text-align: center;
   width: 400px;
 }
@@ -427,7 +420,7 @@ body, html {
 /* 🔹 Input Field */
 .inner-box input {
   width: 100%;
-  padding: 12px;
+  padding: 8px;
   border: none;
   border-radius: 5px;
   font-size: 20px;
@@ -461,7 +454,7 @@ body, html {
   background: none;
   border: none;
   font-size: 24px;
-  color: white;
+  color: rgb(0, 0, 0);
   cursor: pointer;
   z-index: 10;
 }

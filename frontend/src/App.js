@@ -1,14 +1,16 @@
-import React, { useState } from "react";
-import WelcomeScreen from "./components/WelcomeScreen"; 
-import ModuleSelection from "./components/ModuleSelection"; 
-import WordFlash from "./components/WordFlash"; 
-import SpellingPage from "./components/SpellingPage"; 
+import React, { useState, useEffect } from "react";
+import WelcomeScreen from "./components/WelcomeScreen";
+import ModuleSelection from "./components/ModuleSelection";
+import WordFlash from "./components/WordFlash";
+import SpellingPage from "./components/SpellingPage";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import WhoIsPlaying from "./components/WhoIsPlaying"; 
-import ProgressTracker from "./components/ProgressTracker"; 
-import HowToPlay from "./components/HowToPlay"; 
-import LevelSelection from "./components/LevelSelection"; 
+import WhoIsPlaying from "./components/WhoIsPlaying";
+import ProgressTracker from "./components/ProgressTracker";
+import HowToPlay from "./components/HowToPlay";
+import LevelSelection from "./components/LevelSelection";
 import WaitingPage from "./components/WaitingPage";
+import ManualPopup from "./components/ManualPopup";
+import FloatingManualButton from "./components/FloatingManualButton";
 import './App.css';
 
 function App() {
@@ -17,6 +19,14 @@ function App() {
   const [selectedModule, setSelectedModule] = useState(null);
   const [isWordFlashCompleted, setIsWordFlashCompleted] = useState(false);
   const [selectedWord, setSelectedWord] = useState(null);
+  const [showManual, setShowManual] = useState(false);
+  const [minimizedManual, setMinimizedManual] = useState(false);
+  const [manualFadeOut, setManualFadeOut] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowManual(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleContinue = (enteredName) => {
     setName(enteredName);
@@ -39,16 +49,29 @@ function App() {
     setSelectedWord(wordDetails);
   };
 
-  return ( 
-    <Router> 
+  const minimizeManual = () => {
+    setManualFadeOut(true);
+    setTimeout(() => {
+      setShowManual(false);
+      setManualFadeOut(false);
+      setMinimizedManual(true);
+    }, 200); // duration should match CSS fade-out
+  };
+
+  const restoreManual = () => {
+    setShowManual(true);
+    setMinimizedManual(false);
+  };
+
+  return (
+    <Router>
       <Routes>
-      <Route path="/" element={<WelcomeScreen />} />
+        <Route path="/" element={<WelcomeScreen />} />
         <Route path="/who-is-playing" element={<WhoIsPlaying />} />
         <Route path="/select-level" element={<LevelSelection />} />
         <Route path="/progress-tracker" element={<ProgressTracker />} />
-        <Route path="/how-to-play" element={<HowToPlay />} /> 
+        <Route path="/how-to-play" element={<HowToPlay />} />
         <Route path="/waiting-page" element={<WaitingPage />} />
-
       </Routes>
 
       <div className="App">
@@ -67,6 +90,14 @@ function App() {
         ) : showModuleSelection ? (
           <ModuleSelection name={name} onSelectModule={handleModuleSelect} />
         ) : null}
+
+        {showManual && (
+          <ManualPopup
+            onMinimize={minimizeManual}
+            className={manualFadeOut ? "fade-out" : ""}
+          />
+        )}
+        {minimizedManual && <FloatingManualButton onClick={restoreManual} />}
       </div>
     </Router>
   );

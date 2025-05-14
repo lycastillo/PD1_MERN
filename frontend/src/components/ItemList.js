@@ -22,7 +22,7 @@ const ItemList = () => {
     <div>
       <h2>Items List</h2>
       {error ? (
-        <p style={{ color: "red" }}>{error}</p> // Display error message if fetch fails
+        <p style={{ color: "red" }}>{error}</p> 
       ) : (
         <ul>
           {items.map((item) => (

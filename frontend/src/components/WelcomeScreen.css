@@ -22,7 +22,6 @@ body {
   padding: 20px;
 }
 
-/* Left Side - Image (Moved Left) */
 .image-container {
   flex: 1;
   display: flex;
@@ -32,14 +31,14 @@ body {
 }
 
 .main-image {
-  width: 680px; /* Slightly reduced */
+  width: 680px; 
   height: 95vh;
   object-fit: contain;
   position: relative;
-  left: -150px; /* Move left */
+  left: -150px; 
 }
 
-/* Right Side - Menu (Move Further Left) */
+
 .menu-container {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -47,10 +46,10 @@ body {
   flex: 1;
   justify-items: center;
   align-items: center;
-  margin-left: -240px; /* Move buttons even further left */
+  margin-left: -240px; 
 }
 
-/* Button Styles */
+
 .menu-button {
   display: flex;
   flex-direction: column;
@@ -66,7 +65,7 @@ body {
   padding: 30px 0;
 }
 
-/* Adjusted button sizes */
+
 .play-now {
   width: 380px;
   height: 250px;
@@ -103,14 +102,13 @@ body {
   color: #D94924;
 }
 
-/* Button Images */
+
 .menu-button img {
   width: 160px;
   height: auto;
   margin-bottom: 8px;
 }
 
-/* Button Hover Effect */
 .menu-button:hover {
   animation: shake 0.4s ease-in-out;
 }
@@ -152,7 +150,7 @@ body {
   position: fixed;
   width: 100vw;
   height: 100vh;
-  background-color: #D94924; /* Orange Wipe Effect */
+  background-color: #D94924; 
   top: 0;
   left: 0;
   animation: wipeDown 0.6s ease-in-out forwards;
@@ -160,15 +158,15 @@ body {
 }
 
 .yellow-wipe {
-  background-color: #E8F56B; /* Yellow Background */
+  background-color: #E8F56B; 
 }
 
-/* 🔹 Orange Wipe for Progress Tracker */
+
 .orange-wipe {
-  background-color: #D94924; /* Orange Background */
+  background-color: #D94924; 
 }
 
-/* 🔹 Wipe Animation */
+
 @keyframes wipeDown {
   0% {
     transform: translateY(-100%);
@@ -178,7 +176,6 @@ body {
   }
 }
 
-/* Make Progress Tracker take 2 columns */
 .progress-tracker.full-width {
   grid-column: span 3;
 }

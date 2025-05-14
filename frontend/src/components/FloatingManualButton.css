@@ -1,0 +1,15 @@
+.floating-manual-btn {
+  position: fixed;
+  bottom: 20px; /* Better to use a visible positive value */
+  right: 20px;  /* Adjust this as needed */
+  z-index: 1000;
+  width: 60px;
+  height: 60px;
+  cursor: pointer;
+}
+
+.floating-manual-btn img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* Or 'cover' depending on your preference */
+}

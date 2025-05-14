@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./WhoIsPlaying.css";
-import bgImage from "./game-UI.png"; 
+import bgImage from "./game-UI.png";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
@@ -91,13 +91,13 @@ const WhoIsPlaying = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
+        justifyContent: "flex-start"
       }}
     >
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
-      <button className="back-button" onClick={() => navigate("/")}>
-        Back
-      </button>
-      <h1 className="title">WHO'S PLAYING?</h1>
+      <button className="back-button" onClick={() => navigate("/")}>Back</button>
+
+      <h1 className="title" style={{ marginTop: "60px" }}>WHO'S PLAYING?</h1>
 
       <div
         className={`players-container ${
@@ -143,28 +143,27 @@ const WhoIsPlaying = () => {
       >
         {isManageMode ? "Done" : "Manage Players"}
       </button>
+
       {showDialog && (
-        <div className="dialog-overlay">
-          <div className="dialog-box">
-            <div className="inner-box">
-              <button className="close-button" onClick={() => setShowDialog(false)}>
-                ✖
-              </button>
-              <h2>What is your name?</h2>
-              <input
-                type="text"
-                value={newPlayerName}
-                onChange={(e) => setNewPlayerName(e.target.value)}
-                placeholder="Enter name"
-              />
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
-              <button className="enter-button" onClick={handleEnter}>
-                Enter
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+  <div className="dialog-overlay">
+    <div className="dialog-box">
+      <div className="inner-box">
+        <button className="close-button" onClick={() => setShowDialog(false)}>✖</button>
+        <h2>What is your name?</h2>
+        <input
+          type="text"
+          value={newPlayerName}
+          onChange={(e) => setNewPlayerName(e.target.value)}
+          placeholder="Enter name"
+        />
+        {errorMessage && <p className="error-message">{errorMessage}</p>}
+        <button className="enter-button" onClick={handleEnter}>Enter</button>
+      </div>
+    </div>
+  </div>
+)}
+
+
       {showDeleteDialog && (
         <div className="dialog-overlay">
           <div className="dialog-box">
@@ -173,15 +172,8 @@ const WhoIsPlaying = () => {
                 ✖
               </button>
               <h2>Are you sure you want to delete {deletePlayerName}?</h2>
-              <button className="confirm-button" onClick={handleConfirmDelete}>
-                Yes
-              </button>
-              <button
-                className="cancel-button"
-                onClick={() => setShowDeleteDialog(false)}
-              >
-                No
-              </button>
+              <button className="confirm-button" onClick={handleConfirmDelete}>Yes</button>
+              <button className="cancel-button" onClick={() => setShowDeleteDialog(false)}>No</button>
             </div>
           </div>
         </div>

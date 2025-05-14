@@ -81,16 +81,11 @@ const WaitingPage = () => {
         />
       ))}
 
-      {showScore && (
-        <div className="score-balloon-container">
-          <img
-            src={require("./special.png")}
-            alt="score-balloon"
-            className="score-balloon"
-          />
-          <div className="score-text">{score}</div>
-        </div>
-      )}
+{showScore && (
+  <div className="score-popup">
+    {score}
+  </div>
+)}
     </div>
   );
 };
