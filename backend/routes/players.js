@@ -47,4 +47,23 @@ router.delete("/:name", async (req, res) => {
   }
 });
 
+// ✅ Get Progress for a player by name
+router.get("/progress/:playerName", async (req, res) => {
+  try {
+    const { playerName } = req.params;
+
+    const progress = await db.collection("Progress").findOne({ playerName });
+
+    if (!progress) {
+      return res.status(404).json({ message: "No progress found for this player" });
+    }
+
+    res.json(progress);
+  } catch (err) {
+    console.error("❌ Error fetching progress:", err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 module.exports = router;

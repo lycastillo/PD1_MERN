@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WelcomeScreen from "./components/WelcomeScreen";
 import ModuleSelection from "./components/ModuleSelection";
 import WordFlash from "./components/WordFlash";
 import SpellingPage from "./components/SpellingPage";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import WhoIsPlaying from "./components/WhoIsPlaying";
 import ProgressTracker from "./components/ProgressTracker";
 import HowToPlay from "./components/HowToPlay";
@@ -55,7 +55,7 @@ function App() {
       setShowManual(false);
       setManualFadeOut(false);
       setMinimizedManual(true);
-    }, 200); // duration should match CSS fade-out
+    }, 200);
   };
 
   const restoreManual = () => {
@@ -64,42 +64,42 @@ function App() {
   };
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<WelcomeScreen />} />
-        <Route path="/who-is-playing" element={<WhoIsPlaying />} />
-        <Route path="/select-level" element={<LevelSelection />} />
-        <Route path="/progress-tracker" element={<ProgressTracker />} />
-        <Route path="/how-to-play" element={<HowToPlay />} />
-        <Route path="/waiting-page" element={<WaitingPage />} />
-      </Routes>
+    <div className="App">
+      <Router>
+        <Routes>
+          <Route path="/" element={<WelcomeScreen />} />
+          <Route path="/who-is-playing" element={<WhoIsPlaying />} />
+          <Route path="/select-level" element={<LevelSelection />} />
+          <Route path="/progress-tracker" element={<ProgressTracker />} />
+          <Route path="/how-to-play" element={<HowToPlay />} />
+          <Route path="/waiting" element={<WaitingPage />} />
+        </Routes>
+      </Router>
 
-      <div className="App">
-        {isWordFlashCompleted ? (
-          <SpellingPage
-            word={selectedWord.word}
-            audioPath={selectedWord.audioPath}
-            imagePath={selectedWord.imagePath}
-          />
-        ) : selectedModule ? (
-          <WordFlash
-            module={selectedModule}
-            onBackToHome={handleBackToHome}
-            onComplete={handleWordFlashComplete}
-          />
-        ) : showModuleSelection ? (
-          <ModuleSelection name={name} onSelectModule={handleModuleSelect} />
-        ) : null}
+      {isWordFlashCompleted ? (
+        <SpellingPage
+          word={selectedWord.word}
+          audioPath={selectedWord.audioPath}
+          imagePath={selectedWord.imagePath}
+        />
+      ) : selectedModule ? (
+        <WordFlash
+          module={selectedModule}
+          onBackToHome={handleBackToHome}
+          onComplete={handleWordFlashComplete}
+        />
+      ) : showModuleSelection ? (
+        <ModuleSelection name={name} onSelectModule={handleModuleSelect} />
+      ) : null}
 
-        {showManual && (
-          <ManualPopup
-            onMinimize={minimizeManual}
-            className={manualFadeOut ? "fade-out" : ""}
-          />
-        )}
-        {minimizedManual && <FloatingManualButton onClick={restoreManual} />}
-      </div>
-    </Router>
+      {showManual && (
+        <ManualPopup
+          onMinimize={minimizeManual}
+          className={manualFadeOut ? "fade-out" : ""}
+        />
+      )}
+      {minimizedManual && <FloatingManualButton onClick={restoreManual} />}
+    </div>
   );
 }
 

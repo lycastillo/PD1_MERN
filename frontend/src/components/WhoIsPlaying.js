@@ -14,10 +14,20 @@ const WhoIsPlaying = () => {
   const [newPlayerName, setNewPlayerName] = useState("");
   const [deletePlayerName, setDeletePlayerName] = useState("");
   const [isManageMode, setIsManageMode] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [addPlayerError, setAddPlayerError] = useState("");
+  const [selectPlayerError, setSelectPlayerError] = useState("");
+  const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
     fetchPlayers();
+  }, []);
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setCursorPosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   const fetchPlayers = () => {
@@ -29,7 +39,7 @@ const WhoIsPlaying = () => {
 
   const handleEnter = () => {
     if (!newPlayerName.trim()) {
-      setErrorMessage("Name cannot be empty.");
+      setAddPlayerError("Name cannot be empty.");
       return;
     }
 
@@ -39,18 +49,20 @@ const WhoIsPlaying = () => {
         setPlayers([...players, res.data]);
         setNewPlayerName("");
         setShowDialog(false);
-        setErrorMessage("");
+        setAddPlayerError("");
       })
       .catch((err) => {
         if (err.response?.status === 409) {
-          setErrorMessage("❌ Name already exists. Try another.");
+          setAddPlayerError("❌ Name already exists. Try another.");
         } else {
-          setErrorMessage("❌ Could not add player. Try again.");
+          setAddPlayerError("❌ Could not add player. Try again.");
         }
       });
   };
 
   const handleConfirmDelete = () => {
+    if (!deletePlayerName) return;
+
     axios
       .delete(`${API_BASE_URL}/players/${deletePlayerName}`)
       .then(() => {
@@ -58,28 +70,50 @@ const WhoIsPlaying = () => {
         setShowDeleteDialog(false);
         setDeletePlayerName("");
       })
-      .catch((err) => {
-        console.error("❌ Error deleting player:", err);
-      });
+      .catch((err) => console.error("❌ Error deleting player:", err));
   };
 
-  const handleSelectPlayer = (playerName) => {
-    if (isManageMode) {
-      setDeletePlayerName(playerName);
-      setShowDeleteDialog(true);
-    } else {
-      axios
-        .put(`${API_BASE_URL}/updatePlayer`, { playerName })
-        .then(() => navigate("/select-level"))
-        .catch((err) => console.error("❌ Error selecting player:", err));
+  const handleSelectPlayer = async (playerName) => {
+  if (isManageMode) {
+    setDeletePlayerName(playerName);
+    setShowDeleteDialog(true);
+    return;
+  }
+
+  try {
+    // Check if the selected player is currently in Level_Select
+    const levelRes = await axios.get(`${API_BASE_URL}/level-select`);
+    const { Player, Module } = levelRes.data || {};
+    const isSamePlayer = typeof Player === "string" && Player === playerName;
+    const hasModule = typeof Module === "number" && Module !== 0;
+
+    if (isSamePlayer && hasModule) {
+      navigate("/waiting", { state: { selectedPlayer: playerName } });
+      return;
     }
-  };
+
+    // Else, show progress (even if score is 0)
+    const progressRes = await axios.get(`${API_BASE_URL}/progress/${playerName}`);
+    const progressArray = Array.isArray(progressRes.data) ? progressRes.data : [progressRes.data];
+
+    if (progressArray.length > 0) {
+      navigate("/progress-tracker", { state: { playerName } });
+      return;
+    }
+
+    setSelectPlayerError("Player has no score yet.");
+    setTimeout(() => setSelectPlayerError(""), 3000);
+  } catch (err) {
+    console.error("❌ Error during player selection:", err);
+    setSelectPlayerError("Error selecting player. Try again.");
+    setTimeout(() => setSelectPlayerError(""), 3000);
+  }
+};
+
 
   return (
     <div
-      className={`who-playing-screen ${
-        showDialog || showDeleteDialog ? "blur-background" : ""
-      }`}
+      className={`who-playing-screen ${showDialog || showDeleteDialog ? "blur-background" : ""}`}
       style={{
         backgroundImage: `url(${bgImage})`,
         backgroundSize: "cover",
@@ -96,37 +130,46 @@ const WhoIsPlaying = () => {
     >
       <img src="/new2.png" alt="Logo" className="top-left-logo" />
       <button className="back-button" onClick={() => navigate("/")}>Back</button>
-
       <h1 className="title" style={{ marginTop: "60px" }}>WHO'S PLAYING?</h1>
 
-      <div
-        className={`players-container ${
-          isManageMode ? "manage-mode" : ""
-        } ${players.length > 0 ? "has-players" : ""}`}
-      >
+      <div className={`players-container ${isManageMode ? "manage-mode" : ""} ${players.length > 0 ? "has-players" : ""}`}>
         {players.map((player) => (
-          <button
+          <div
             key={player._id}
             className="player-box"
             onClick={() => handleSelectPlayer(player.name)}
+            style={{ position: "relative" }}
           >
-            <div className="player-initial">
-              {player.name.charAt(0).toUpperCase()}
-            </div>
+            <div className="player-initial">{player.name.charAt(0).toUpperCase()}</div>
             <div className="player-name">{player.name}</div>
             {isManageMode && (
-              <button
+              <div
                 className="delete-player"
                 onClick={(e) => {
                   e.stopPropagation();
                   setDeletePlayerName(player.name);
                   setShowDeleteDialog(true);
                 }}
+                style={{
+                  position: "absolute",
+                  top: "5px",
+                  right: "5px",
+                  background: "#e74c3c",
+                  color: "white",
+                  borderRadius: "50%",
+                  width: "24px",
+                  height: "24px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                  fontSize: "14px"
+                }}
               >
-                X
-              </button>
+                ×
+              </div>
             )}
-          </button>
+          </div>
         ))}
 
         {!isManageMode && (
@@ -137,45 +180,60 @@ const WhoIsPlaying = () => {
         )}
       </div>
 
-      <button
-        className="manage-players"
-        onClick={() => setIsManageMode(!isManageMode)}
-      >
+      <button className="manage-players" onClick={() => setIsManageMode(!isManageMode)}>
         {isManageMode ? "Done" : "Manage Players"}
       </button>
 
       {showDialog && (
-  <div className="dialog-overlay">
-    <div className="dialog-box">
-      <div className="inner-box">
-        <button className="close-button" onClick={() => setShowDialog(false)}>✖</button>
-        <h2>What is your name?</h2>
-        <input
-          type="text"
-          value={newPlayerName}
-          onChange={(e) => setNewPlayerName(e.target.value)}
-          placeholder="Enter name"
-        />
-        {errorMessage && <p className="error-message">{errorMessage}</p>}
-        <button className="enter-button" onClick={handleEnter}>Enter</button>
-      </div>
-    </div>
-  </div>
-)}
-
+        <div className="dialog-overlay">
+          <div className="dialog-box">
+            <div className="inner-box">
+              <button className="close-button" onClick={() => setShowDialog(false)}>✖</button>
+              <h2>What is your name?</h2>
+              <input
+                type="text"
+                value={newPlayerName}
+                onChange={(e) => setNewPlayerName(e.target.value)}
+                placeholder="Enter name"
+              />
+              {addPlayerError && <p className="error-message">{addPlayerError}</p>}
+              <button className="enter-button" onClick={handleEnter}>Enter</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteDialog && (
         <div className="dialog-overlay">
           <div className="dialog-box">
             <div className="inner-box">
-              <button className="close-button" onClick={() => setShowDeleteDialog(false)}>
-                ✖
-              </button>
+              <button className="close-button" onClick={() => setShowDeleteDialog(false)}>✖</button>
               <h2>Are you sure you want to delete {deletePlayerName}?</h2>
               <button className="confirm-button" onClick={handleConfirmDelete}>Yes</button>
               <button className="cancel-button" onClick={() => setShowDeleteDialog(false)}>No</button>
             </div>
           </div>
+        </div>
+      )}
+
+      {selectPlayerError && (
+        <div
+          className="floating-error"
+          style={{
+            position: "fixed",
+            top: cursorPosition.y + 12,
+            left: cursorPosition.x + 12,
+            backgroundColor: "rgba(255, 0, 0, 0.9)",
+            color: "#fff",
+            padding: "8px 12px",
+            borderRadius: "6px",
+            zIndex: 9999,
+            fontSize: "14px",
+            maxWidth: "250px",
+            pointerEvents: "none"
+          }}
+        >
+          {selectPlayerError}
         </div>
       )}
     </div>

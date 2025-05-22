@@ -47,7 +47,7 @@ body, html {
 
 .step-box {
     background-color: #E8F56B;
-    color: #65DA5A;
+    color: #745718;
     width: 250px;
     height: 280px;
     display: flex;
@@ -56,7 +56,6 @@ body, html {
     border-radius: 25px;
     font-size: 23px;
     text-align: center;
-    text-shadow: 2px 2px 0 #000;
     box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.2);
     position: relative;
     z-index: 1;

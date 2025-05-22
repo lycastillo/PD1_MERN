@@ -19,6 +19,18 @@
   display: block;
 }
 
+.word-button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.difficulty-button:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
 
 .word-length-container {
   display: grid;

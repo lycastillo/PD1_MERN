@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
 
-const { updateModule, updateLevel } = require("./api/updateData"); // ✅ Make sure this path is correct
+const { updateModule, updateLevel } = require("./api/updateData");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -21,23 +21,10 @@ mongoose.connect(process.env.MONGO_URI, {
 
 const db = mongoose.connection;
 
-// ✅ Update Player
+// ✅ Update Player (NO progress entry created here)
 app.put("/api/updatePlayer", async (req, res) => {
   try {
     const { playerName } = req.body;
-    const currentData = await db.collection("Level_Select").findOne({});
-
-    // ✅ Save current data to Progress
-    if (currentData?.Player) {
-      await db.collection("Progress").insertOne({
-        Player: currentData.Player,
-        Module: currentData.Module || 0,
-        Level: currentData.Level || 0,
-        Date: new Date().toLocaleDateString(),
-        Time: new Date().toLocaleTimeString(),
-        Score: 0,
-      });
-    }
 
     // ✅ Set new player in Level_Select
     await db.collection("Level_Select").updateOne(
@@ -53,11 +40,11 @@ app.put("/api/updatePlayer", async (req, res) => {
   }
 });
 
-// ✅ Update Module using updateData.js
+// ✅ Update Module
 app.put("/api/updateModule", async (req, res) => {
   try {
     const { moduleNumber } = req.body;
-    await updateModule(moduleNumber); // ✅ Calls helper
+    await updateModule(moduleNumber);
     res.json({ message: `✅ Module updated to ${moduleNumber}` });
   } catch (err) {
     console.error("❌ Error updating Module:", err);
@@ -65,11 +52,11 @@ app.put("/api/updateModule", async (req, res) => {
   }
 });
 
-// ✅ Update Level using updateData.js
+// ✅ Update Level
 app.put("/api/updateLevel", async (req, res) => {
   try {
     const { levelNumber } = req.body;
-    await updateLevel(levelNumber); // ✅ Calls helper
+    await updateLevel(levelNumber);
     res.json({ message: `✅ Level updated to ${levelNumber}` });
   } catch (err) {
     console.error("❌ Error updating Level:", err);
@@ -107,30 +94,55 @@ app.post("/api/players", async (req, res) => {
   }
 });
 
-// In server.js or /routes/progress.js if modular
-app.get("/api/progress/:playerName", async (req, res) => {
-    try {
-      const { playerName } = req.params;
-      const progress = await db.collection("Progress").find({ Player: playerName }).toArray();
-      res.json(progress);
-    } catch (err) {
-      console.error("❌ Error fetching progress:", err);
-      res.status(500).json({ message: "Server error", error: err });
-    }
-  });
 
-  app.get("/api/getScore", async (req, res) => {
-    try {
-      const current = await db.collection("Level_Select").findOne({});
-      res.json({ Score: current?.Score ?? null }); 
-    } catch (err) {
-      console.error("❌ Error getting score:", err);
-      res.status(500).json({ message: "Server error", error: err });
+app.get("/api/progress/:playerName", async (req, res) => {
+  try {
+    const { playerName } = req.params;
+
+    const progressList = await db.collection("Progress")
+      .find({ Player: playerName })
+      .sort({ Date: 1, Time: 1 })  // or use -1 if you prefer newest first
+      .toArray();
+
+    if (!progressList.length) {
+      return res.status(404).json({ message: "No progress found for this player" });
     }
-  });
-  
-  
-  
+
+    res.json(progressList);  // ✅ Send all records
+  } catch (err) {
+    console.error("❌ Error fetching progress:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+});
+
+
+
+
+// ✅ Get Level_Select data
+app.get("/api/level-select", async (req, res) => {
+  try {
+    console.log("🔍 GET /api/level-select called");
+
+    const data = await db.collection("Level_Select").findOne({});
+    console.log("📦 Level_Select data:", data);
+
+    res.json(data || {});
+  } catch (err) {
+    console.error("❌ Error fetching Level_Select:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+});
+
+// ✅ Get current score
+app.get("/api/getScore", async (req, res) => {
+  try {
+    const current = await db.collection("Level_Select").findOne({});
+    res.json({ Score: current?.Score ?? null }); 
+  } catch (err) {
+    console.error("❌ Error getting score:", err);
+    res.status(500).json({ message: "Server error", error: err });
+  }
+});
 
 // ✅ Delete Player
 app.delete("/api/players/:name", async (req, res) => {

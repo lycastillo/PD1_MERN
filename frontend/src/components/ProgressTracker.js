@@ -6,11 +6,17 @@ import "./ProgressTracker.css";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
+const moduleNames = [
+  '2 Letter Words', 'CVC Words', 'VCV Words', 'VCC Words',
+  '3 Letter Words', 'CVVC Words', 'CVCC Words', '4 Letter Words',
+  '5 Letter Words', 'Colors', 'Numbers', 'Animals', 'Food', 'Body Parts'
+];
+
 const ProgressTracker = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const passedPlayerName = location.state?.playerName || null;
-  
+
   const [showTableView, setShowTableView] = useState(false);
   const [players, setPlayers] = useState([]);
   const [selectedPlayer, setSelectedPlayer] = useState(null);
@@ -21,7 +27,6 @@ const ProgressTracker = () => {
   const [scoreMessage, setScoreMessage] = useState("");
   const [overallScore, setOverallScore] = useState(0);
   const [dailyScores, setDailyScores] = useState({});
-
   const [showScorePopup, setShowScorePopup] = useState(false);
   const [popupContent, setPopupContent] = useState("");
 
@@ -31,18 +36,21 @@ const ProgressTracker = () => {
       .catch((err) => console.error("Error fetching players:", err));
   }, []);
 
-  const fetchPlayerProgress = (playerName) => {
-    setSelectedPlayer(playerName);
-    axios.get(`${API_BASE_URL}/progress/${playerName}`)
-      .then((res) => {
-        setPlayerProgress(res.data);
-        setFilteredProgress(res.data);
-      })
-      .catch(() => {
-        setPlayerProgress([]);
-        setFilteredProgress([]);
-      });
-  };
+const fetchPlayerProgress = (playerName) => {
+  setSelectedPlayer(playerName);
+axios.get(`${API_BASE_URL}/progress/${playerName}`)
+  .then((res) => {
+    const data = Array.isArray(res.data) ? res.data : [res.data];
+    setPlayerProgress(data);
+    setFilteredProgress(data);
+  })
+
+    .catch(() => {
+      setPlayerProgress([]);
+      setFilteredProgress([]);
+    });
+};
+
 
   useEffect(() => {
     if (passedPlayerName) {
@@ -50,29 +58,31 @@ const ProgressTracker = () => {
     }
   }, [passedPlayerName]);
 
-  const getImprovementMap = (entries) => {
-    const map = {};
-    entries.forEach((entry) => {
-      const key = `${entry.Module}-${entry.Level}`;
-      if (!map[key]) {
-        map[key] = [];
-      }
-      map[key].push(entry);
-    });
+const getImprovementMap = (entries) => {
+  const safeEntries = Array.isArray(entries) ? entries : [entries]; // ✅ Fix here
 
-    const improvements = {};
-    Object.entries(map).forEach(([key, list]) => {
-      const sorted = list.sort((a, b) => new Date(a.Date) - new Date(b.Date));
-      const first = sorted[0].Score;
-      sorted.forEach((attempt) => {
-        const change = attempt.Score - first;
-        const percent = Math.round((change / Math.max(first, 1)) * 100);
-        improvements[`${key}-${attempt.Date}-${attempt.Score}`] = percent;
-      });
-    });
+  const map = {};
+  safeEntries.forEach((entry) => {
+    const key = `${entry.Module}-${entry.Level}`;
+    if (!map[key]) {
+      map[key] = [];
+    }
+    map[key].push(entry);
+  });
 
-    return improvements;
-  };
+  const improvements = {};
+  Object.entries(map).forEach(([key, list]) => {
+    const sorted = list.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    const first = sorted[0].Score;
+    sorted.forEach((attempt) => {
+      const change = attempt.Score - first;
+      improvements[`${key}-${attempt.Date}-${attempt.Score}`] = change;
+    });
+  });
+
+  return improvements;
+};
+
 
   useEffect(() => {
     let filtered = [...playerProgress];
@@ -149,28 +159,18 @@ const ProgressTracker = () => {
               )}
 
               <div className="score-buttons" style={{ textAlign: "center", marginBottom: "15px" }}>
-                <button
-                  className="btn-overall"
-                  onClick={() => {
-                    setPopupContent(`Overall Score: ${overallScore}`);
-                    setShowScorePopup(true);
-                  }}
-                >
+                <button className="btn-overall" onClick={() => {
+                  setPopupContent(`Overall Score: ${overallScore}`);
+                  setShowScorePopup(true);
+                }}>
                   Show Overall Score
                 </button>
-                <button
-                  className="btn-daily"
-                  onClick={() => {
-                    const dailyEntries = Object.entries(dailyScores).sort(([a], [b]) => new Date(b) - new Date(a));
-                    const latestDay = dailyEntries[0];
-                    if (latestDay) {
-                      setPopupContent(`Latest Daily Score (${latestDay[0]}): ${latestDay[1]}`);
-                    } else {
-                      setPopupContent("No daily scores available.");
-                    }
-                    setShowScorePopup(true);
-                  }}
-                >
+                <button className="btn-daily" onClick={() => {
+                  const dailyEntries = Object.entries(dailyScores).sort(([a], [b]) => new Date(b) - new Date(a));
+                  const latestDay = dailyEntries[0];
+                  setPopupContent(latestDay ? `Latest Daily Score (${latestDay[0]}): ${latestDay[1]}` : "No daily scores available.");
+                  setShowScorePopup(true);
+                }}>
                   Show Daily Scores
                 </button>
               </div>
@@ -199,17 +199,16 @@ const ProgressTracker = () => {
                         const key = `${entry.Module}-${entry.Level}-${entry.Date}-${entry.Score}`;
                         const improvement = improvementMap[key];
                         const dotColor = improvement > 0 ? "#00FF7F" : "#FFA500";
+                        const message = improvement > 0 ? `Improved by ${improvement} point${improvement > 1 ? "s" : ""}` : "No improvement";
                         return (
                           <tr key={index}>
                             <td style={{ backgroundColor: "yellow" }}>{entry.Date}</td>
-                            <td>{entry.Module}</td>
+                            <td>{moduleNames[entry.Module - 1] || entry.Module}</td>
                             <td>{entry.Level}</td>
                             <td>
                               {entry.Score}
                               <span className="improvement-dot" style={{ backgroundColor: dotColor }}>
-                                <div className="improvement-tooltip">
-                                  {improvement > 0 ? `${improvement}% improvement since first attempt` : "No improvement"}
-                                </div>
+                                <div className="improvement-tooltip">{message}</div>
                               </span>
                             </td>
                           </tr>
@@ -225,7 +224,7 @@ const ProgressTracker = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#808080" />
                       <XAxis dataKey="Date" stroke="#FFD700" />
                       <YAxis domain={[0, 10]} stroke="#FFD700" />
-                      <Tooltip contentStyle={{ backgroundColor: "#fff", color: "#333", borderRadius: "10px" }} labelStyle={{ fontWeight: "bold", color: "#000" }} />
+                      <Tooltip contentStyle={{ backgroundColor: "#fff", color: "#333", borderRadius: "10px" }} />
                       <Legend />
                       <Line
                         type="monotone"
@@ -251,25 +250,15 @@ const ProgressTracker = () => {
         </div>
       </div>
 
-      {/* Score Popup */}
       {showScorePopup && (
         <div style={{
-          position: "fixed",
-          top: 0, left: 0,
-          width: "100vw",
-          height: "100vh",
-          backgroundColor: "rgba(0, 0, 0, 0.5)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 2000,
+          position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", display: "flex",
+          alignItems: "center", justifyContent: "center", zIndex: 2000,
         }}>
           <div style={{
-            backgroundColor: "white",
-            padding: "30px",
-            borderRadius: "15px",
-            textAlign: "center",
-            boxShadow: "0px 5px 15px rgba(0,0,0,0.3)",
+            backgroundColor: "white", padding: "30px", borderRadius: "15px",
+            textAlign: "center", boxShadow: "0px 5px 15px rgba(0,0,0,0.3)",
             maxWidth: "90%",
           }}>
             <h2 style={{ marginBottom: "20px" }}>Score Information</h2>
@@ -277,13 +266,8 @@ const ProgressTracker = () => {
             <button
               onClick={() => setShowScorePopup(false)}
               style={{
-                padding: "10px 20px",
-                backgroundColor: "#65DA5A",
-                border: "none",
-                borderRadius: "10px",
-                fontWeight: "bold",
-                fontSize: "16px",
-                cursor: "pointer",
+                padding: "10px 20px", backgroundColor: "#65DA5A", border: "none",
+                borderRadius: "10px", fontWeight: "bold", fontSize: "16px", cursor: "pointer"
               }}
             >
               Close

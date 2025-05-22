@@ -11,9 +11,13 @@ const LevelSelection = () => {
 
   const [selectedModule, setSelectedModule] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
+  const [modulesDisabled, setModulesDisabled] = useState(false);
+  const [levelsDisabled, setLevelsDisabled] = useState(false);
 
   const handleSelectModule = (moduleNumber) => {
+    if (modulesDisabled) return;
     setSelectedModule(moduleNumber);
+    setModulesDisabled(true);
     axios
       .put(`${API_BASE_URL}/updateModule`, { moduleNumber })
       .then(() => console.log(`✅ Module ${moduleNumber} selected`))
@@ -21,14 +25,16 @@ const LevelSelection = () => {
   };
 
   const handleSelectLevel = (levelNumber) => {
+    if (levelsDisabled) return;
     setSelectedLevel(levelNumber);
+    setLevelsDisabled(true);
     axios
       .put(`${API_BASE_URL}/updateLevel`, { levelNumber })
       .then(() => {
         console.log(`✅ Level ${levelNumber} selected`);
         setTimeout(() => {
           navigate("/waiting-page");
-        }, 500); 
+        }, 500);
       })
       .catch((err) => console.error("❌ Error updating level:", err));
   };
@@ -47,7 +53,22 @@ const LevelSelection = () => {
     >
       <h1 className="title">CHOOSE MODULE</h1>
       <div className="word-length-container">
-        {[...Array(15)].map((_, index) => {
+        {[
+          "2 Letter Words",
+          "CVC Words",
+          "VCV Words",
+          "VCC Words",
+          "3 Letter Words",
+          "CVVC Words",
+          "CVCC Words",
+          "4 Letter Words",
+          "5 Letter Words",
+          "Colors",
+          "Numbers",
+          "Animals",
+          "Food",
+          "Body Parts",
+        ].map((label, index) => {
           const number = index + 1;
           const isSelected = selectedModule === number;
 
@@ -56,8 +77,9 @@ const LevelSelection = () => {
               key={index}
               className={`word-button ${isSelected ? "selected" : ""}`}
               onClick={() => handleSelectModule(number)}
+              disabled={modulesDisabled}
             >
-              MODULE {number}
+              {label}
             </button>
           );
         })}
@@ -74,6 +96,7 @@ const LevelSelection = () => {
               key={index}
               className={`difficulty-button ${isSelected ? "selected" : ""}`}
               onClick={() => handleSelectLevel(number)}
+              disabled={levelsDisabled}
             >
               {difficulty}
             </button>
@@ -81,7 +104,9 @@ const LevelSelection = () => {
         })}
       </div>
 
-      <button className="back-button" onClick={() => navigate("/who-is-playing")}>Back</button>
+      <button className="back-button" onClick={() => navigate("/who-is-playing")} disabled={modulesDisabled || levelsDisabled}>
+        Back
+      </button>
     </div>
   );
 };
